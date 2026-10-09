@@ -99,6 +99,31 @@ class InstallerTests(unittest.TestCase):
                 self.assertEqual((self.target.skills / name / relative).read_bytes(), expected)
         self.assertEqual(set(cli.read_record(self.target)["skills"]), set(cli.SKILLS))
 
+    def test_four_skill_update_adds_clarify_skill(self):
+        """A registered v0.2.0 bundle upgrades with a complete clarify payload."""
+        old = {name: self.payload[name] for name in cli.PRE_CLARIFY_SKILLS}
+        with patch.object(cli, "SKILLS", cli.PRE_CLARIFY_SKILLS):
+            self.install(old)
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(cli.show_status(self.target, self.payload), 1)
+        self.install(update=True)
+        for name, files in self.payload.items():
+            for relative, expected in files.items():
+                self.assertEqual((self.target.skills / name / relative).read_bytes(), expected)
+        self.assertEqual(set(cli.read_record(self.target)["skills"]), set(cli.SKILLS))
+
+    def test_four_skill_upgrade_protects_local_changes(self):
+        """Adding clarify must not overwrite edits to registered skills."""
+        old = {name: self.payload[name] for name in cli.PRE_CLARIFY_SKILLS}
+        with patch.object(cli, "SKILLS", cli.PRE_CLARIFY_SKILLS):
+            self.install(old)
+        changed = self.target.skills / cli.SKILLS[3] / "SKILL.md"
+        changed.write_bytes(b"local implementation rules")
+        with self.assertRaises(cli.InstallError):
+            self.install(self.changed_payload(), update=True)
+        self.assertEqual(changed.read_bytes(), b"local implementation rules")
+        self.assertFalse((self.target.skills / cli.SKILLS[4]).exists())
+
     def test_three_skill_update_rolls_back_new_skill_failure(self):
         """A failed fourth-skill commit restores the entire old bundle and record."""
         old = {name: self.payload[name] for name in cli.PRE_IMPLEMENT_SKILLS}

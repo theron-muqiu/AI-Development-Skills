@@ -18,14 +18,17 @@ from datetime import datetime, timezone
 
 from . import __version__
 
-SKILLS = ("ai-devlop-spec", "ai-devlop-plan", "ai-devlop-task", "ai-devlop-implement")
+SKILLS = ("ai-devlop-spec", "ai-devlop-plan", "ai-devlop-task", "ai-devlop-implement",
+          "ai-devlop-clarify")
 LEGACY_SKILLS = SKILLS[:2]
 PRE_IMPLEMENT_SKILLS = SKILLS[:3]
+PRE_CLARIFY_SKILLS = SKILLS[:4]
 REQUIRED_ASSETS = {
     SKILLS[0]: ("需求分析.md",),
     SKILLS[1]: ("详细设计.md", "接口设计.md", "数据结构设计.md"),
     SKILLS[2]: ("任务清单.md",),
     SKILLS[3]: ("实现记录.md",),
+    SKILLS[4]: (),
 }
 
 
@@ -166,7 +169,8 @@ def read_record(target: Target) -> dict | None:
                 or record["target"] != str(target.skills)
                 or not isinstance(record["version"], str)
                 or set(record["skills"]) not in (set(SKILLS), set(LEGACY_SKILLS),
-                                                  set(PRE_IMPLEMENT_SKILLS))):
+                                                  set(PRE_IMPLEMENT_SKILLS),
+                                                  set(PRE_CLARIFY_SKILLS))):
             raise ValueError("manifest identity")
         for hashes in record["skills"].values():
             if not isinstance(hashes, dict) or "SKILL.md" not in hashes:
@@ -191,7 +195,7 @@ def apply_install(target: Target, payload: dict[str, dict[str, bytes]], *,
     expected = {name: {file: hashlib.sha256(data).hexdigest() for file, data in files.items()}
                 for name, files in payload.items()}
     current = {name: snapshot(target.skills / name) for name in SKILLS}
-    # Registered two- or three-skill bundles may add missing skills during update.
+    # Registered older bundles may add missing skills during update.
     required = tuple(record["skills"]) if record else SKILLS
     if update and any(current[name] is None for name in required):
         raise InstallError("技能尚未完整安装，请先使用 install 或 init。")
