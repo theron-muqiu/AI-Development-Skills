@@ -166,7 +166,7 @@ uv run --no-project --with . python -m unittest discover -s tests -v
 
 ```text
 .
-├── .agents/skills/       # 技能定义与模板，唯一维护源
+├── skills/               # 技能定义与模板，唯一维护源
 │   ├── ai-devlop-spec/
 │   └── ai-devlop-plan/
 ├── src/ai_devlop/        # CLI 实现

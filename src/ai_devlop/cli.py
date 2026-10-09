@@ -102,7 +102,7 @@ def load_payload() -> dict[str, dict[str, bytes]]:
     """Load packaged resources, or the single canonical source in a checkout."""
     source = resources.files("ai_devlop").joinpath("resources", "skills")
     if not source.is_dir():
-        source = Path(__file__).absolute().parents[2] / ".agents" / "skills"
+        source = Path(__file__).absolute().parents[2] / "skills"
         if not source.is_dir():
             raise InstallError("安装包缺少技能资源，请重新构建或安装完整包。")
     payload: dict[str, dict[str, bytes]] = {}
