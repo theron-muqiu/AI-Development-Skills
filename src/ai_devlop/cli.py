@@ -1,4 +1,4 @@
-"""Install both skills as one guarded filesystem transaction."""
+"""Install the complete skill bundle as one guarded filesystem transaction."""
 
 from __future__ import annotations
 
@@ -18,10 +18,14 @@ from datetime import datetime, timezone
 
 from . import __version__
 
-SKILLS = ("ai-devlop-spec", "ai-devlop-plan")
+SKILLS = ("ai-devlop-spec", "ai-devlop-plan", "ai-devlop-task", "ai-devlop-implement")
+LEGACY_SKILLS = SKILLS[:2]
+PRE_IMPLEMENT_SKILLS = SKILLS[:3]
 REQUIRED_ASSETS = {
     SKILLS[0]: ("需求分析.md",),
     SKILLS[1]: ("详细设计.md", "接口设计.md", "数据结构设计.md"),
+    SKILLS[2]: ("任务清单.md",),
+    SKILLS[3]: ("实现记录.md",),
 }
 
 
@@ -161,7 +165,8 @@ def read_record(target: Target) -> dict | None:
         if (record["schema"] != 1 or record["agent"] != target.agent
                 or record["target"] != str(target.skills)
                 or not isinstance(record["version"], str)
-                or set(record["skills"]) != set(SKILLS)):
+                or set(record["skills"]) not in (set(SKILLS), set(LEGACY_SKILLS),
+                                                  set(PRE_IMPLEMENT_SKILLS))):
             raise ValueError("manifest identity")
         for hashes in record["skills"].values():
             if not isinstance(hashes, dict) or "SKILL.md" not in hashes:
@@ -177,7 +182,7 @@ def read_record(target: Target) -> dict | None:
 
 def apply_install(target: Target, payload: dict[str, dict[str, bytes]], *,
                   update: bool, force: bool, dry_run: bool) -> None:
-    """Preflight both skills, stage complete replacements, then commit or roll back."""
+    """Preflight the bundle, including legacy upgrades, then commit or roll back."""
     check_path(target.skills, directory=True)
     check_path(target.manager, directory=True)
     check_path(target.manager / "backups", directory=True)
@@ -186,14 +191,16 @@ def apply_install(target: Target, payload: dict[str, dict[str, bytes]], *,
     expected = {name: {file: hashlib.sha256(data).hexdigest() for file, data in files.items()}
                 for name, files in payload.items()}
     current = {name: snapshot(target.skills / name) for name in SKILLS}
-    if update and any(current[name] is None for name in SKILLS):
-        raise InstallError("两个技能尚未完整安装，请先使用 install 或 init。")
+    # Registered two- or three-skill bundles may add missing skills during update.
+    required = tuple(record["skills"]) if record else SKILLS
+    if update and any(current[name] is None for name in required):
+        raise InstallError("技能尚未完整安装，请先使用 install 或 init。")
     # Without a baseline, differing directories are unowned; never silently adopt them.
     conflicts = []
     for name in SKILLS:
         if current[name] is None or current[name] == expected[name]:
             continue
-        baseline = record["skills"][name] if record else None
+        baseline = record["skills"].get(name) if record else None
         if not update or current[name] != baseline:
             conflicts.append(name)
     if conflicts and not force:
@@ -209,7 +216,7 @@ def apply_install(target: Target, payload: dict[str, dict[str, bytes]], *,
         print("预览完成，未写入文件。")
         return
     if not changes and record == manifest:
-        print("两个技能已是当前包版本，无需更改。")
+        print("全部技能已是当前包版本，无需更改。")
         return
 
     target.manager.mkdir(parents=True, exist_ok=True)
@@ -255,7 +262,7 @@ def apply_install(target: Target, payload: dict[str, dict[str, bytes]], *,
                     backed_up.append(name)
                 (workspace / "new" / name).rename(destination)
                 installed.append(name)
-            # Commit the manifest last, only after BOTH skill directories succeeded.
+            # Commit the manifest last, only after all skill directories succeeded.
             os.replace(staged_record, target.record)
         except BaseException as exc:
             rollback_errors = []
@@ -315,7 +322,7 @@ def show_status(target: Target, payload: dict[str, dict[str, bytes]]) -> int:
         if current is None:
             state = "未安装"
             healthy = False
-        elif record and current != record["skills"][name]:
+        elif record and current != record["skills"].get(name):
             state = "有本地修改或缺失文件"
             healthy = False
         elif current == expected:
@@ -334,8 +341,8 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="ai-devlop", description="为 Codex 或 Hermes 完整安装需求分析和设计技能。")
     parser.add_argument("--version", action="version", version=__version__)
     commands = parser.add_subparsers(dest="command")
-    for command, help_text in (("install", "用户级安装两个技能"), ("init", "项目级安装两个技能"),
-                               ("status", "查看安装状态"), ("update", "用当前包更新两个技能")):
+    for command, help_text in (("install", "用户级安装全部技能"), ("init", "项目级安装全部技能"),
+                               ("status", "查看安装状态"), ("update", "用当前包更新全部技能")):
         sub = commands.add_parser(command, help=help_text)
         sub.add_argument("--agent", required=True, choices=("codex", "hermes"))
         if command != "install":
