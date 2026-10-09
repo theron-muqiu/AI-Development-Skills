@@ -27,9 +27,9 @@ class PackageTests(unittest.TestCase):
         with zipfile.ZipFile(WHEEL) as wheel, tarfile.open(SDIST) as sdist:
             for name in SKILLS:
                 for relative in ("SKILL.md", *("assets/" + a for a in REQUIRED_ASSETS[name])):
-                    original = (PROJECT / ".agents" / "skills" / name / relative).read_bytes()
+                    original = (PROJECT / "skills" / name / relative).read_bytes()
                     self.assertEqual(wheel.read(f"ai_devlop/resources/skills/{name}/{relative}"), original)
-                    archived = sdist.extractfile(f"ai_devlop_cli-{__version__}/.agents/skills/{name}/{relative}")
+                    archived = sdist.extractfile(f"ai_devlop_cli-{__version__}/skills/{name}/{relative}")
                     self.assertIsNotNone(archived)
                     self.assertEqual(archived.read(), original)
             self.assertIn("ai-devlop = ai_devlop.cli:main", wheel.read(f"ai_devlop_cli-{__version__}.dist-info/entry_points.txt").decode())
@@ -59,7 +59,7 @@ class PackageTests(unittest.TestCase):
                 for name in SKILLS:
                     for asset in REQUIRED_ASSETS[name]:
                         self.assertEqual((destination / name / "assets" / asset).read_bytes(),
-                                         (PROJECT / ".agents" / "skills" / name / "assets" / asset).read_bytes())
+                                         (PROJECT / "skills" / name / "assets" / asset).read_bytes())
             project = root / "Git 项目"
             (project / ".git").mkdir(parents=True)
             for agent, folder in (("codex", ".agents"), ("hermes", ".hermes")):

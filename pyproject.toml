@@ -20,8 +20,8 @@ path = "src/ai_devlop/__init__.py"
 packages = ["src/ai_devlop"]
 
 [tool.hatch.build.targets.wheel.force-include]
-".agents/skills/ai-devlop-spec" = "ai_devlop/resources/skills/ai-devlop-spec"
-".agents/skills/ai-devlop-plan" = "ai_devlop/resources/skills/ai-devlop-plan"
+"skills/ai-devlop-spec" = "ai_devlop/resources/skills/ai-devlop-spec"
+"skills/ai-devlop-plan" = "ai_devlop/resources/skills/ai-devlop-plan"
 
 [tool.hatch.build.targets.sdist]
-only-include = ["src", "tests", ".agents/skills", "pyproject.toml", "README.md"]
+only-include = ["src", "tests", "skills", "pyproject.toml", "README.md"]
