@@ -4,7 +4,7 @@ AI 主导开发全流程，人工只在关键节点审核。
 
 本项目以 **AI 主导开发** 为核心，旨在将从需求分析、方案设计到开发落地的关键环节沉淀为可复用技能。AI 持续推进各阶段工作，人工主要审核关键成果，仅在存在重要歧义或需要纠偏时介入，形成高效、可追踪的开发流程。
 
-目前为 **Codex** 和 **Hermes** 提供需求分析、技术设计、任务拆分与实现四个技能，通过统一的场景编号关联需求与设计文档，逐步完善从需求到落地的开发流程。
+本项目为 **Codex** 和 **Hermes** 提供需求分析、需求澄清、技术设计、任务拆分与实现五个技能，通过统一的场景编号关联需求与设计文档，逐步完善从需求到落地的开发流程。
 
 [快速开始](#快速开始) · [使用](#使用) · [安装与管理](#安装与管理) · [开发](#开发) · [分支管理](#分支管理) · [常见问题](#常见问题)
 
@@ -13,16 +13,17 @@ AI 主导开发全流程，人工只在关键节点审核。
 - **需求先行**：澄清关键业务规则，明确正常流程、异常边界与验收标准。
 - **场景可追踪**：使用稳定的 `S-001` 等编号，将需求场景与详细设计、接口、数据结构关联起来。
 - **贴合现有项目**：沿用已有代码、接口、数据结构与项目规范，不凭空建立另一套设计。
-- **轻量安装**：技能和模板随 CLI 分发，仅支持 Codex、Hermes，每次完整安装四个技能。
+- **轻量安装**：技能和模板随 CLI 分发，仅支持 Codex、Hermes，每次完整安装五个技能。
 
 | 技能 | 负责什么 | 输出文档 |
 | --- | --- | --- |
-| `ai-devlop-spec` | 需求澄清、业务场景、验收标准 | `需求分析.md` |
+| `ai-devlop-spec` | 需求整理、业务场景、验收标准 | `需求分析.md`、原始输入留存 |
+| `ai-devlop-clarify` | 专项澄清并同步已有需求、设计及任务，保持上下文一致 | 修订原有文档、原始输入留存；不新增澄清报告 |
 | `ai-devlop-plan` | 场景实现方案、接口与数据结构设计 | `详细设计.md`、`接口设计.md`、`数据结构设计.md` |
 | `ai-devlop-task` | 将需求实现划分为一个或多个任务，明确范围、依赖与完成标准 | `任务清单.md` |
 | `ai-devlop-implement` | 按任务依赖完成全部实现、验证并同步任务状态 | 项目代码与必要测试、`实现记录.md` |
 
-当前源码覆盖需求分析、技术设计、任务拆分与实现。前三个技能负责文档规划；明确调用实现技能后，按任务修改代码、执行必要验证并更新完成状态，不自动提交、发布或部署。任务勾选以真实完成标准为依据。
+当前源码覆盖需求分析、需求澄清、技术设计、任务拆分与实现。需求、澄清、设计和任务技能负责文档规划；明确调用实现技能后，按任务修改代码、执行必要验证并更新完成状态，不自动提交、发布或部署。任务勾选以真实完成标准为依据。
 
 ## 快速开始
 
@@ -41,19 +42,19 @@ AI 主导开发全流程，人工只在关键节点审核。
 
 ```bash
 # Codex
-uvx --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.2.0" ai-devlop install --agent codex
+uvx --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.3.0" ai-devlop install --agent codex
 ```
 
 ```bash
 # Hermes
-uvx --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.2.0" ai-devlop install --agent hermes
+uvx --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.3.0" ai-devlop install --agent hermes
 ```
 
-两种模式均安装 `ai-devlop-spec`、`ai-devlop-plan`、`ai-devlop-task` 和 `ai-devlop-implement`。`v0.2.0` 包含完整四技能流程；原 `v0.1.0` 仅包含需求分析与技术设计。首次获取或构建工具可能需要联网；技能与模板从安装包读取，不另外下载。
+两种模式均安装 `ai-devlop-spec`、`ai-devlop-clarify`、`ai-devlop-plan`、`ai-devlop-task` 和 `ai-devlop-implement`。`v0.3.0` 包含完整五技能流程与原始输入留存；原 `v0.2.0` 为四技能组合，`v0.1.0` 仅包含需求分析与技术设计。首次获取或构建工具可能需要联网；技能与模板从安装包读取，不另外下载。
 
 ### 3. 开始使用
 
-开启新的 Agent 会话，先调用需求分析技能，确认需求后再调用设计技能，设计明确后调用任务拆分技能，审核任务后调用实现技能。若 Codex 未显示新技能，可尝试重启。
+开启新的 Agent 会话，先调用需求分析技能，需要专项澄清时调用澄清技能，确认需求后再调用设计技能，设计明确后调用任务拆分技能，审核任务后调用实现技能。若 Codex 未显示新技能，可尝试重启。
 
 ## 使用
 
@@ -63,6 +64,8 @@ uvx --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.2.0
 
 ```text
 $ai-devlop-spec 支持用户取消未发货订单。需求编号为 XQ20261009-001，请澄清取消条件、退款规则和异常场景。
+
+$ai-devlop-clarify 检查 docs/requirements/XQ20261009-001/ai-devlop-spec/需求分析.md 中的关键歧义，逐项确认并同步调整已有需求、设计及任务文档。
 
 $ai-devlop-plan 根据 docs/requirements/XQ20261009-001/ai-devlop-spec/需求分析.md 和当前项目生成技术设计。
 
@@ -76,6 +79,8 @@ $ai-devlop-implement 根据 docs/requirements/XQ20261009-001/ai-devlop-task/任�
 ```text
 /ai-devlop-spec 支持用户取消未发货订单。需求编号为 XQ20261009-001，请澄清取消条件、退款规则和异常场景。
 
+/ai-devlop-clarify 检查 docs/requirements/XQ20261009-001/ai-devlop-spec/需求分析.md 中的关键歧义，逐项确认并同步调整已有需求、设计及任务文档。
+
 /ai-devlop-plan 根据 docs/requirements/XQ20261009-001/ai-devlop-spec/需求分析.md 和当前项目生成技术设计。
 
 /ai-devlop-task 根据 docs/requirements/XQ20261009-001/ 下的需求与设计，将实现划分为一个或多个任务。
@@ -83,12 +88,15 @@ $ai-devlop-implement 根据 docs/requirements/XQ20261009-001/ai-devlop-task/任�
 /ai-devlop-implement 根据 docs/requirements/XQ20261009-001/ai-devlop-task/任务清单.md 完成全部任务并验证结果。
 ```
 
-需求分析负责明确“做什么”，技术设计负责说明“如何做”。设计阶段沿用需求中的场景编号；任务拆分按业务交付结果划分，简单需求可只有一个任务，每个任务写清场景覆盖、实现位置、前置依赖和完成标准。需求仍有关键歧义时，应先澄清。任务清单生成后不会自动开始实施；调用实现技能后，默认按依赖顺序完成全部未完成任务，验证通过才勾选。遇到阻塞时保留真实未完成状态，继续不受影响的任务。
+需求分析负责明确“做什么”，专项澄清用于检查已有需求、逐项确认关键缺口并立即同步已有需求、设计及任务的对应章节，不生成独立澄清文档；没有关键歧义时无需额外澄清。技术设计负责说明“如何做”。设计阶段沿用需求中的场景编号；任务拆分按业务交付结果划分，简单需求可只有一个任务，每个任务写清场景覆盖、实现位置、前置依赖和完成标准。需求仍有关键歧义时，应先澄清。任务清单生成后不会自动开始实施；调用实现技能后，默认按依赖顺序完成全部未完成任务，验证通过才勾选。遇到阻塞时保留真实未完成状态，继续不受影响的任务。
 
 默认输出结构：
 
 ```text
 docs/requirements/XQ20261009-001/
+├── 原始需求/
+│   ├── 20261009-143025-123-spec.md
+│   └── 20261009-150010-456-clarify.md
 ├── ai-devlop-spec/
 │   └── 需求分析.md
 ├── ai-devlop-plan/
@@ -103,7 +111,9 @@ docs/requirements/XQ20261009-001/
 
 需求编号优先使用用户输入明确指定的编号，否则读取输入文件中的编号；同一需求在不同技能间沿用编号。没有编号时，按执行当天日期自动生成 `XQYYYYMMDD-XXX`，从 `001` 开始，目录或文件已占用则自增。需求编号写入产出文档头部。
 
-不同技能的文档产出分别落地到以技能名命名的子目录；实现代码与测试仍放在项目规定位置，任务状态在原任务清单中更新。用户指定输出根目录时仍保留 `<需求编号>/<技能名>/` 结构；明确指定完整文件路径或修订既有文件时按指定位置处理。已有文档会先读取，再按本次需求修订。
+生成新文档的技能分别落地到以技能名命名的子目录；澄清技能在原位置修订已有文档，不创建独立澄清产出目录；实现代码与测试仍放在项目规定位置，任务状态在原任务清单中更新。用户指定输出根目录时仍保留 `<需求编号>/<技能名>/` 结构；明确指定完整文件路径或修订既有文件时按指定位置处理。已有文档会先读取，再按本次需求修订。
+
+`spec` 和 `clarify` 每次调用均将用户输入按时间留存到同一需求下的 `原始需求/`，后续补充、纠正和澄清回答也逐条保存。文件名使用 `YYYYMMDD-HHmmss-SSS-spec.md` 或 `YYYYMMDD-HHmmss-SSS-clarify.md`，正文记录时间、时区、来源和用户原文；同名追加序号，不覆盖历史。简短选项回答保留对应问题上下文，输入文件或附件保留可读取的原始副本与来源。敏感值脱敏，无法取得的材料明确注明。输入留存不代表规则已确认，也不取代需求和设计正文；用户明确禁止写文件时不留存。
 
 ## 安装与管理
 
@@ -112,7 +122,7 @@ docs/requirements/XQ20261009-001/
 经常给不同项目安装技能时，可以长期安装 CLI：
 
 ```bash
-uv tool install ai-devlop-cli --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.2.0"
+uv tool install ai-devlop-cli --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.3.0"
 ```
 
 之后可以在任意目录使用 `ai-devlop`。以下示例使用已安装的 CLI；不长期安装时，继续用上面的 `uvx --from ... ai-devlop ...` 形式执行。在本地源码目录开发时，也可以使用 `uvx --from . ai-devlop ...`。
@@ -157,7 +167,7 @@ ai-devlop status --agent codex --here
 ai-devlop update --agent codex --here
 ```
 
-更新工具与更新技能是两个步骤。新 CLI 支持将有有效安装记录、无本地修改的原两技能或三技能组合升级为四技能组合；新增技能目录存在冲突时仍需先检查，不能静默覆盖。发布新版本标签后，在上面的 `uv tool install` 命令中改用新标签并增加 `--force`，随后执行 `ai-devlop update --agent codex`（或 `hermes`）。`update` 只使用当前 CLI 携带的资源，不联网选择最新版本。
+更新工具与更新技能是两个步骤。新 CLI 支持将有有效安装记录、无本地修改的原两技能、三技能或四技能组合升级为五技能组合；新增技能目录存在冲突时仍需先检查，不能静默覆盖。发布新版本标签后，在上面的 `uv tool install` 命令中改用新标签并增加 `--force`，随后执行 `ai-devlop update --agent codex`（或 `hermes`）。`update` 只使用当前 CLI 携带的资源，不联网选择最新版本。
 
 ### 覆盖与恢复
 
@@ -186,6 +196,7 @@ uv run --no-project --with . python -m unittest discover -s tests -v
 .
 ├── skills/               # 技能定义与模板，唯一维护源
 │   ├── ai-devlop-spec/
+│   ├── ai-devlop-clarify/
 │   ├── ai-devlop-plan/
 │   ├── ai-devlop-task/
 │   └── ai-devlop-implement/
@@ -213,13 +224,13 @@ uv run --no-project --with . python -m unittest discover -s tests -v
 3. 审核通过后合并；合并后删除短期分支，不直接向 `main` 推送日常改动。
 4. 准备发布时，先更新 CLI 版本并验证安装包；合并到 `main` 后创建对应的 `vX.Y.Z` 标签。标签指向固定提交，不移动已发布标签。
 
-当前稳定版本为 [`v0.2.0`](https://github.com/theron-muqiu/AI-Development-Skills/tree/v0.2.0)。安装示例固定此标签，避免 `main` 后续更新改变已安装版本。
+当前稳定版本为 [`v0.3.0`](https://github.com/theron-muqiu/AI-Development-Skills/tree/v0.3.0)。安装示例固定此标签，避免 `main` 后续更新改变已安装版本。
 
 ## 常见问题
 
 ### 能否只安装一个技能，或安装到其他 Agent？
 
-不能。目前仅支持 Codex、Hermes，四个技能作为一个完整组合安装和更新。
+不能。目前仅支持 Codex、Hermes，五个技能作为一个完整组合安装和更新。
 
 ### 能否直接从 GitHub 或 PyPI 一行安装？
 
@@ -235,7 +246,7 @@ uv run --no-project --with . python -m unittest discover -s tests -v
 
 ## 参考
 
-本项目借鉴 [Spec Kit](https://github.com/github/spec-kit) 的需求先行与命令式安装思路，参考需求先行、技术设计、任务拆分与按任务实施流程。
+本项目借鉴 [Spec Kit](https://github.com/github/spec-kit) 的需求先行与命令式安装思路，参考需求先行、专项澄清、技术设计、任务拆分与按任务实施流程。
 
 - [Codex 技能说明](https://developers.openai.com/codex/skills)
 - [Hermes 技能说明](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills/)

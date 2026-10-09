@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "ai-devlop-cli"
 dynamic = ["version"]
-description = "Install the bundled requirement, design, task and implementation skills for Codex or Hermes."
+description = "Install the bundled requirement, clarification, design, task and implementation skills for Codex or Hermes."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = []
@@ -24,6 +24,7 @@ packages = ["src/ai_devlop"]
 "skills/ai-devlop-plan" = "ai_devlop/resources/skills/ai-devlop-plan"
 "skills/ai-devlop-task" = "ai_devlop/resources/skills/ai-devlop-task"
 "skills/ai-devlop-implement" = "ai_devlop/resources/skills/ai-devlop-implement"
+"skills/ai-devlop-clarify" = "ai_devlop/resources/skills/ai-devlop-clarify"
 
 [tool.hatch.build.targets.sdist]
 only-include = ["src", "tests", "skills", "pyproject.toml", "README.md"]
