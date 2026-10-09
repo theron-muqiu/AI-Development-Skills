@@ -6,7 +6,7 @@ AI 主导开发全流程，人工只在关键节点审核。
 
 目前为 **Codex** 和 **Hermes** 提供需求分析与技术设计两个技能，通过统一的场景编号关联需求与设计文档，逐步完善从需求到落地的开发流程。
 
-[快速开始](#快速开始) · [使用](#使用) · [安装与管理](#安装与管理) · [开发](#开发) · [常见问题](#常见问题)
+[快速开始](#快速开始) · [使用](#使用) · [安装与管理](#安装与管理) · [开发](#开发) · [分支管理](#分支管理) · [常见问题](#常见问题)
 
 ## 特点
 
@@ -31,7 +31,7 @@ AI 主导开发全流程，人工只在关键节点审核。
 - CLI 使用 **Python 3.10+**；uv 可以按需获取 Python。
 
 > [!NOTE]
-> CLI 从 GitHub 仓库获取，尚未发布到 PyPI。以下命令需要能够访问 GitHub。
+> CLI 从 GitHub 版本标签获取，尚未发布到 PyPI。以下命令需要能够访问 GitHub。
 
 ### 2. 安装技能
 
@@ -39,12 +39,12 @@ AI 主导开发全流程，人工只在关键节点审核。
 
 ```bash
 # Codex
-uvx --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@main" ai-devlop install --agent codex
+uvx --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.1.0" ai-devlop install --agent codex
 ```
 
 ```bash
 # Hermes
-uvx --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@main" ai-devlop install --agent hermes
+uvx --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.1.0" ai-devlop install --agent hermes
 ```
 
 两种模式均安装 `ai-devlop-spec` 和 `ai-devlop-plan`。首次获取或构建工具可能需要联网；技能与模板从安装包读取，不另外下载。
@@ -94,7 +94,7 @@ docs/requirements/订单取消/
 经常给不同项目安装技能时，可以长期安装 CLI：
 
 ```bash
-uv tool install ai-devlop-cli --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@main"
+uv tool install ai-devlop-cli --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.1.0"
 ```
 
 之后可以在任意目录使用 `ai-devlop`。以下示例使用已安装的 CLI；不长期安装时，继续用上面的 `uvx --from ... ai-devlop ...` 形式执行。在本地源码目录开发时，也可以使用 `uvx --from . ai-devlop ...`。
@@ -139,14 +139,7 @@ ai-devlop status --agent codex --here
 ai-devlop update --agent codex --here
 ```
 
-更新工具与更新技能是两个步骤。本地源码更新后，在源码根目录执行：
-
-```bash
-uv tool install --force .
-ai-devlop update --agent codex
-```
-
-`update` 只使用当前 CLI 携带的资源，不联网选择最新版本。使用 `uvx` 运行本地新版时，必要时添加 uv 的 `--refresh` 选项。
+更新工具与更新技能是两个步骤。发布新版本标签后，在上面的 `uv tool install` 命令中改用新标签并增加 `--force`，随后执行 `ai-devlop update --agent codex`（或 `hermes`）。`update` 只使用当前 CLI 携带的资源，不联网选择最新版本。
 
 ### 覆盖与恢复
 
@@ -184,6 +177,24 @@ uv run --no-project --with . python -m unittest discover -s tests -v
 
 模板保存在各技能的 `assets/` 中，构建时收入安装包。修改技能或模板后，应重新构建并验证资源完整性；不要维护第二份模板。
 
+## 分支管理
+
+采用适合小型项目的短期分支流程：`main` 保存可安装的稳定内容，日常修改从最新 `main` 创建工作分支，通过 Pull Request 合并。
+
+| 分支 | 用途 |
+| --- | --- |
+| `main` | 稳定主线；发布标签从这里创建 |
+| `feature/<主题>` | 新技能或功能 |
+| `fix/<主题>` | 错误修复 |
+| `docs/<主题>`、`chore/<主题>` | 文档或维护工作 |
+
+1. 从最新 `main` 创建短期分支，保持一个分支只处理一个主题。
+2. 完成后运行 `uv build` 和测试，将分支推送到 GitHub，并向 `main` 提交 Pull Request。
+3. 审核通过后合并；合并后删除短期分支，不直接向 `main` 推送日常改动。
+4. 准备发布时，先更新 CLI 版本并验证安装包；合并到 `main` 后创建对应的 `vX.Y.Z` 标签。标签指向固定提交，不移动已发布标签。
+
+当前稳定版本为 [`v0.1.0`](https://github.com/theron-muqiu/AI-Development-Skills/tree/v0.1.0)。安装示例固定此标签，避免 `main` 后续更新改变已安装版本。
+
 ## 常见问题
 
 ### 能否只安装一个技能，或安装到其他 Agent？
@@ -192,7 +203,7 @@ uv run --no-project --with . python -m unittest discover -s tests -v
 
 ### 能否直接从 GitHub 或 PyPI 一行安装？
 
-可以按“快速开始”中的命令直接从 GitHub 安装；当前尚未发布到 PyPI，因此不能使用 `uvx --from ai-devlop-cli`。需要稳定复现时，应在命令中使用已发布的版本标签或提交哈希代替 `@main`。
+可以按“快速开始”中的命令直接从 GitHub 标签安装；当前尚未发布到 PyPI，因此不能使用 `uvx --from ai-devlop-cli`。新版本发布后，将 Git URL 中的标签改为对应版本。
 
 ### 检查状态正常，为什么 Agent 没有显示技能？
 
