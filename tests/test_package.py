@@ -23,7 +23,7 @@ class PackageTests(unittest.TestCase):
     """Check packaged canonical resources and clean uvx installation paths."""
 
     def test_archive_resources_match_source(self):
-        """Wheel and sdist must contain every skill and four unchanged templates."""
+        """Wheel and sdist must contain every skill and all unchanged templates."""
         with zipfile.ZipFile(WHEEL) as wheel, tarfile.open(SDIST) as sdist:
             for name in SKILLS:
                 for relative in ("SKILL.md", *("assets/" + a for a in REQUIRED_ASSETS[name])):

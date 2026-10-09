@@ -61,6 +61,78 @@ class InstallerTests(unittest.TestCase):
         self.assertEqual(before, self.target.record.stat().st_mtime_ns)
         self.assertFalse((self.target.manager / "backups").exists())
 
+    def test_legacy_bundle_update_adds_task_skill(self):
+        """Upgrade a registered two-skill install without losing its baseline."""
+        legacy = {name: self.payload[name] for name in cli.LEGACY_SKILLS}
+        with patch.object(cli, "SKILLS", cli.LEGACY_SKILLS):
+            self.install(legacy)
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(cli.show_status(self.target, self.payload), 1)
+        self.install(self.changed_payload(), update=True)
+        self.assertEqual(set(cli.read_record(self.target)["skills"]), set(cli.SKILLS))
+        for name, files in self.changed_payload().items():
+            for relative, expected in files.items():
+                self.assertEqual((self.target.skills / name / relative).read_bytes(), expected)
+
+    def test_legacy_upgrade_preserves_modified_skills(self):
+        """Adding task support must retain local-edit protection for old skills."""
+        legacy = {name: self.payload[name] for name in cli.LEGACY_SKILLS}
+        with patch.object(cli, "SKILLS", cli.LEGACY_SKILLS):
+            self.install(legacy)
+        changed = self.target.skills / cli.SKILLS[0] / "SKILL.md"
+        changed.write_bytes(b"local edit")
+        with self.assertRaises(cli.InstallError):
+            self.install(self.changed_payload(), update=True)
+        self.assertEqual(changed.read_bytes(), b"local edit")
+        self.assertFalse((self.target.skills / cli.SKILLS[2]).exists())
+
+    def test_three_skill_update_adds_implement_skill(self):
+        """Upgrade a registered task-era bundle while preserving all resources."""
+        old = {name: self.payload[name] for name in cli.PRE_IMPLEMENT_SKILLS}
+        with patch.object(cli, "SKILLS", cli.PRE_IMPLEMENT_SKILLS):
+            self.install(old)
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(cli.show_status(self.target, self.payload), 1)
+        self.install(update=True)
+        for name, files in self.payload.items():
+            for relative, expected in files.items():
+                self.assertEqual((self.target.skills / name / relative).read_bytes(), expected)
+        self.assertEqual(set(cli.read_record(self.target)["skills"]), set(cli.SKILLS))
+
+    def test_three_skill_update_rolls_back_new_skill_failure(self):
+        """A failed fourth-skill commit restores the entire old bundle and record."""
+        old = {name: self.payload[name] for name in cli.PRE_IMPLEMENT_SKILLS}
+        with patch.object(cli, "SKILLS", cli.PRE_IMPLEMENT_SKILLS):
+            self.install(old)
+        record = self.target.record.read_bytes()
+        before = {name: cli.snapshot(self.target.skills / name) for name in cli.SKILLS}
+        rename = Path.rename
+
+        def fail_implement(source, destination):
+            """Fail only when publishing the staged implementation skill."""
+            path = Path(source)
+            if path.parent.name == "new" and path.name == cli.SKILLS[3]:
+                raise OSError("simulated implementation skill failure")
+            return rename(source, destination)
+
+        with patch.object(Path, "rename", fail_implement):
+            with self.assertRaises(OSError):
+                self.install(self.changed_payload(), update=True)
+        self.assertEqual(self.target.record.read_bytes(), record)
+        self.assertEqual({name: cli.snapshot(self.target.skills / name) for name in cli.SKILLS}, before)
+
+    def test_legacy_upgrade_rejects_unregistered_task_conflict(self):
+        """A task directory absent from the legacy manifest cannot be adopted."""
+        legacy = {name: self.payload[name] for name in cli.LEGACY_SKILLS}
+        with patch.object(cli, "SKILLS", cli.LEGACY_SKILLS):
+            self.install(legacy)
+        task = self.target.skills / cli.SKILLS[2]
+        task.mkdir()
+        (task / "SKILL.md").write_bytes(b"custom task")
+        with self.assertRaises(cli.InstallError):
+            self.install(update=True)
+        self.assertEqual((task / "SKILL.md").read_bytes(), b"custom task")
+
     def test_dry_run_creates_nothing(self):
         """Preview must not even create the destination directory or lock."""
         self.install(dry_run=True)
