@@ -42,15 +42,15 @@ AI 主导开发全流程，人工只在关键节点审核。
 
 ```bash
 # Codex
-uvx --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.3.0" ai-devlop install --agent codex
+uvx --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.3.1" ai-devlop install --agent codex
 ```
 
 ```bash
 # Hermes
-uvx --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.3.0" ai-devlop install --agent hermes
+uvx --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.3.1" ai-devlop install --agent hermes
 ```
 
-两种模式均安装 `ai-devlop-spec`、`ai-devlop-clarify`、`ai-devlop-plan`、`ai-devlop-task` 和 `ai-devlop-implement`。`v0.3.0` 包含完整五技能流程与原始输入留存；原 `v0.2.0` 为四技能组合，`v0.1.0` 仅包含需求分析与技术设计。首次获取或构建工具可能需要联网；技能与模板从安装包读取，不另外下载。
+两种模式均安装 `ai-devlop-spec`、`ai-devlop-clarify`、`ai-devlop-plan`、`ai-devlop-task` 和 `ai-devlop-implement`。`v0.3.1` 包含完整五技能流程，原始输入使用单文件汇总、时间正序及附件链接；原 `v0.2.0` 为四技能组合，`v0.1.0` 仅包含需求分析与技术设计。首次获取或构建工具可能需要联网；技能与模板从安装包读取，不另外下载。
 
 ### 3. 开始使用
 
@@ -95,8 +95,9 @@ $ai-devlop-implement 根据 docs/requirements/XQ20261009-001/ai-devlop-task/任�
 ```text
 docs/requirements/XQ20261009-001/
 ├── 原始需求/
-│   ├── 20261009-143025-123-spec.md
-│   └── 20261009-150010-456-clarify.md
+│   ├── 原始需求.md
+│   └── 输入文件/
+│       └── 20261009-143025-123-业务需求.docx
 ├── ai-devlop-spec/
 │   └── 需求分析.md
 ├── ai-devlop-plan/
@@ -113,7 +114,7 @@ docs/requirements/XQ20261009-001/
 
 生成新文档的技能分别落地到以技能名命名的子目录；澄清技能在原位置修订已有文档，不创建独立澄清产出目录；实现代码与测试仍放在项目规定位置，任务状态在原任务清单中更新。用户指定输出根目录时仍保留 `<需求编号>/<技能名>/` 结构；明确指定完整文件路径或修订既有文件时按指定位置处理。已有文档会先读取，再按本次需求修订。
 
-`spec` 和 `clarify` 每次调用均将用户输入按时间留存到同一需求下的 `原始需求/`，后续补充、纠正和澄清回答也逐条保存。文件名使用 `YYYYMMDD-HHmmss-SSS-spec.md` 或 `YYYYMMDD-HHmmss-SSS-clarify.md`，正文记录时间、时区、来源和用户原文；同名追加序号，不覆盖历史。简短选项回答保留对应问题上下文，输入文件或附件保留可读取的原始副本与来源。敏感值脱敏，无法取得的材料明确注明。输入留存不代表规则已确认，也不取代需求和设计正文；用户明确禁止写文件时不留存。
+`spec` 和 `clarify` 共用同一需求下的 `原始需求/原始需求.md`，所有调用输入、补充、纠正和澄清回答按时间正序列在这一个文件中。文件头统一注明需求编号和时区，每条仅用时间、技能、输入类型标题及用户原文；必要时补充来源和简短回答的问题上下文。输入文件与附件单独保存在 `原始需求/输入文件/`，对应记录用相对链接指引，不重复嵌入文件正文；副本用时间戳加原文件名命名，重名追加序号。历史原文保留，敏感值脱敏，未取得的材料注明来源。留存不代表业务规则已确认；用户明确禁止写文件时不留存。
 
 ## 安装与管理
 
@@ -122,7 +123,7 @@ docs/requirements/XQ20261009-001/
 经常给不同项目安装技能时，可以长期安装 CLI：
 
 ```bash
-uv tool install ai-devlop-cli --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.3.0"
+uv tool install ai-devlop-cli --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.3.1"
 ```
 
 之后可以在任意目录使用 `ai-devlop`。以下示例使用已安装的 CLI；不长期安装时，继续用上面的 `uvx --from ... ai-devlop ...` 形式执行。在本地源码目录开发时，也可以使用 `uvx --from . ai-devlop ...`。
@@ -224,7 +225,7 @@ uv run --no-project --with . python -m unittest discover -s tests -v
 3. 审核通过后合并；合并后删除短期分支，不直接向 `main` 推送日常改动。
 4. 准备发布时，先更新 CLI 版本并验证安装包；合并到 `main` 后创建对应的 `vX.Y.Z` 标签。标签指向固定提交，不移动已发布标签。
 
-当前稳定版本为 [`v0.3.0`](https://github.com/theron-muqiu/AI-Development-Skills/tree/v0.3.0)。安装示例固定此标签，避免 `main` 后续更新改变已安装版本。
+当前稳定版本为 [`v0.3.1`](https://github.com/theron-muqiu/AI-Development-Skills/tree/v0.3.1)。安装示例固定此标签，避免 `main` 后续更新改变已安装版本。
 
 ## 常见问题
 
