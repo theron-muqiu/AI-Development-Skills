@@ -42,15 +42,15 @@ AI 主导开发全流程，人工只在关键节点审核。
 
 ```bash
 # Codex
-uvx --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.3.1" ai-devlop install --agent codex
+uvx --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.3.2" ai-devlop install --agent codex
 ```
 
 ```bash
 # Hermes
-uvx --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.3.1" ai-devlop install --agent hermes
+uvx --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.3.2" ai-devlop install --agent hermes
 ```
 
-两种模式均安装 `ai-devlop-spec`、`ai-devlop-clarify`、`ai-devlop-plan`、`ai-devlop-task` 和 `ai-devlop-implement`。`v0.3.1` 包含完整五技能流程，原始输入使用单文件汇总、时间正序及附件链接；原 `v0.2.0` 为四技能组合，`v0.1.0` 仅包含需求分析与技术设计。首次获取或构建工具可能需要联网；技能与模板从安装包读取，不另外下载。
+两种模式均安装 `ai-devlop-spec`、`ai-devlop-clarify`、`ai-devlop-plan`、`ai-devlop-task` 和 `ai-devlop-implement`。`v0.3.2` 包含完整五技能流程，需求模板新增前置业务术语、逐项出处及有序列表规范；原始输入使用单文件汇总、时间正序及附件链接；原 `v0.2.0` 为四技能组合，`v0.1.0` 仅包含需求分析与技术设计。首次获取或构建工具可能需要联网；技能与模板从安装包读取，不另外下载。
 
 ### 3. 开始使用
 
@@ -123,7 +123,7 @@ docs/requirements/XQ20261009-001/
 经常给不同项目安装技能时，可以长期安装 CLI：
 
 ```bash
-uv tool install ai-devlop-cli --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.3.1"
+uv tool install ai-devlop-cli --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.3.2"
 ```
 
 之后可以在任意目录使用 `ai-devlop`。以下示例使用已安装的 CLI；不长期安装时，继续用上面的 `uvx --from ... ai-devlop ...` 形式执行。在本地源码目录开发时，也可以使用 `uvx --from . ai-devlop ...`。
@@ -225,7 +225,7 @@ uv run --no-project --with . python -m unittest discover -s tests -v
 3. 审核通过后合并；合并后删除短期分支，不直接向 `main` 推送日常改动。
 4. 准备发布时，先更新 CLI 版本并验证安装包；合并到 `main` 后创建对应的 `vX.Y.Z` 标签。标签指向固定提交，不移动已发布标签。
 
-当前稳定版本为 [`v0.3.1`](https://github.com/theron-muqiu/AI-Development-Skills/tree/v0.3.1)。安装示例固定此标签，避免 `main` 后续更新改变已安装版本。
+当前稳定版本为 [`v0.3.2`](https://github.com/theron-muqiu/AI-Development-Skills/tree/v0.3.2)。安装示例固定此标签，避免 `main` 后续更新改变已安装版本。
 
 ## 常见问题
 
