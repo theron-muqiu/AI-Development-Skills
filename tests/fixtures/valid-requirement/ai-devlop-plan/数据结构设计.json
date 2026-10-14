@@ -1,0 +1,41 @@
+{
+  "$schema": "ai-devlop://schemas/data/1.0",
+  "schemaVersion": "1.0",
+  "documentType": "data",
+  "requirementId": "XQ20261013-001",
+  "title": "数据结构设计",
+  "relationships": [],
+  "tables": [
+    {
+      "id": "DB-001",
+      "name": "orders",
+      "change": "modify",
+      "fields": [
+        {
+          "id": "F-001",
+          "name": "status",
+          "dataType": "varchar(32)",
+          "nullable": false,
+          "default": {
+            "kind": "unset"
+          },
+          "description": "订单状态"
+        }
+      ],
+      "indexes": [
+        {
+          "id": "IDX-001",
+          "name": "PRIMARY",
+          "fields": [
+            "id"
+          ],
+          "kind": "primary",
+          "purpose": "定位订单"
+        }
+      ]
+    }
+  ],
+  "redis": [],
+  "messages": [],
+  "otherStructures": []
+}

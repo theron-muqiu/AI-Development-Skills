@@ -1,0 +1,137 @@
+{
+  "$schema": "ai-devlop://schemas/spec/1.0",
+  "schemaVersion": "1.0",
+  "documentType": "spec",
+  "requirementId": "XQ20261013-001",
+  "title": "需求分析",
+  "terms": [
+    {
+      "id": "TERM-001",
+      "name": "未发货订单",
+      "meaning": "尚未交付物流的订单",
+      "aliases": [],
+      "sourceRefs": [
+        {
+          "path": "../原始需求/原始需求.json",
+          "id": "I-001",
+          "locator": "2026-10-13 09:00 用户原话"
+        }
+      ]
+    }
+  ],
+  "goals": [
+    {
+      "id": "G-001",
+      "text": "允许用户取消未发货订单。",
+      "sourceRefs": [
+        {
+          "path": "../原始需求/原始需求.json",
+          "id": "I-001",
+          "locator": "2026-10-13 09:00 用户原话"
+        }
+      ]
+    }
+  ],
+  "scope": {
+    "included": [
+      {
+        "id": "SC-001",
+        "text": "取消未发货订单。",
+        "sourceRefs": [
+          {
+            "path": "../原始需求/原始需求.json",
+            "id": "I-001",
+            "locator": "2026-10-13 09:00 用户原话"
+          }
+        ]
+      }
+    ],
+    "excluded": []
+  },
+  "rules": [
+    {
+      "id": "R-001",
+      "text": "仅未发货状态允许取消。",
+      "sourceRefs": [
+        {
+          "path": "../原始需求/原始需求.json",
+          "id": "I-001",
+          "locator": "2026-10-13 09:00 用户原话"
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "S-001",
+      "name": "取消未发货订单",
+      "summary": "用户取消自己的未发货订单。",
+      "steps": [
+        {
+          "id": "STEP-001",
+          "text": "校验订单归属与状态。",
+          "sourceRefs": [
+            {
+              "path": "../原始需求/原始需求.json",
+              "id": "I-001",
+              "locator": "2026-10-13 09:00 用户原话"
+            }
+          ]
+        }
+      ],
+      "exceptions": [
+        {
+          "id": "EX-001",
+          "condition": "已发货",
+          "result": "拒绝取消并说明原因。",
+          "sourceRefs": [
+            {
+              "path": "../原始需求/原始需求.json",
+              "id": "I-001",
+              "locator": "2026-10-13 09:00 用户原话"
+            }
+          ]
+        }
+      ],
+      "acceptance": [
+        {
+          "id": "A-001",
+          "precondition": "订单未发货",
+          "action": "用户提交取消",
+          "expected": "订单状态变为已取消",
+          "sourceRefs": [
+            {
+              "path": "../原始需求/原始需求.json",
+              "id": "I-001",
+              "locator": "2026-10-13 09:00 用户原话"
+            }
+          ]
+        }
+      ],
+      "sourceRefs": [
+        {
+          "path": "../原始需求/原始需求.json",
+          "id": "I-001",
+          "locator": "2026-10-13 09:00 用户原话"
+        }
+      ],
+      "diagram": "flowchart TD\n A[取消请求] --> B{未发货?}\n B -->|是| C[取消订单]\n B -->|否| D[拒绝]"
+    }
+  ],
+  "stateTransitions": [
+    {
+      "id": "ST-001",
+      "from": "未发货",
+      "action": "取消",
+      "to": "已取消",
+      "allowed": true,
+      "sourceRefs": [
+        {
+          "path": "../原始需求/原始需求.json",
+          "id": "I-001",
+          "locator": "2026-10-13 09:00 用户原话"
+        }
+      ]
+    }
+  ]
+}

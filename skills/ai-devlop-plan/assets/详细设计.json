@@ -1,0 +1,70 @@
+{
+  "$schema": "ai-devlop://schemas/plan/1.0",
+  "schemaVersion": "1.0",
+  "documentType": "plan",
+  "requirementId": "XQ20261013-001",
+  "title": "详细设计",
+  "summary": "沿用现有订单服务实现取消。",
+  "modules": [
+    {
+      "id": "M-001",
+      "name": "OrderService",
+      "role": "校验并更新订单状态",
+      "change": "修改",
+      "methods": [
+        {
+          "id": "MTH-001",
+          "signature": "cancel(orderId)",
+          "responsibility": "完成取消校验与更新"
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "P-001",
+      "scenarioRef": {
+        "path": "../ai-devlop-spec/需求分析.json",
+        "id": "S-001"
+      },
+      "entryPoint": "OrderController.cancel",
+      "interfaceRefs": [
+        {
+          "path": "接口设计.json",
+          "id": "API-001"
+        }
+      ],
+      "dataRefs": [
+        {
+          "path": "数据结构设计.json",
+          "id": "DB-001"
+        }
+      ],
+      "implementation": "校验归属和状态，条件更新订单。",
+      "acceptanceMappings": [
+        {
+          "acceptanceRef": {
+            "path": "../ai-devlop-spec/需求分析.json",
+            "id": "A-001"
+          },
+          "implementation": "状态条件更新",
+          "verificationPlan": "订单服务测试"
+        }
+      ]
+    }
+  ],
+  "policies": {
+    "transactions": "条件更新处于数据库事务内。",
+    "concurrency": "以状态条件更新避免重复取消。"
+  },
+  "codeChanges": [
+    {
+      "id": "C-001",
+      "kind": "modify",
+      "path": "src/main/java/example/OrderService.java",
+      "purpose": "新增取消处理"
+    }
+  ],
+  "overallFlow": "请求进入订单服务，经状态校验和条件更新后返回结果。",
+  "overallDiagram": "sequenceDiagram\n  participant U as 用户\n  participant S as OrderService\n  U->>S: 取消订单\n  S-->>U: 返回结果"
+}

@@ -1,0 +1,356 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "$schema",
+    "schemaVersion",
+    "documentType",
+    "requirementId",
+    "title",
+    "summary",
+    "modules",
+    "scenarios",
+    "codeChanges"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "ai-devlop://schemas/plan/1.0",
+      "description": "本地格式标识 ai-devlop://schemas/<documentType>/1.0，不联网读取。"
+    },
+    "schemaVersion": {
+      "const": "1.0",
+      "description": "文档格式版本，当前固定 1.0，与 CLI 版本独立。"
+    },
+    "documentType": {
+      "const": "plan",
+      "description": "文档类别，由文件职责确定，不随标题改变。"
+    },
+    "requirementId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "同一需求的全部文档保持一致。"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "供阅读器显示的文档标题。"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "modules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+          },
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "change": {
+            "type": "string"
+          },
+          "methods": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+                },
+                "signature": {
+                  "type": "string"
+                },
+                "responsibility": {
+                  "type": "string"
+                },
+                "parameters": {
+                  "type": "string"
+                },
+                "returns": {
+                  "type": "string"
+                },
+                "sharedBehavior": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "signature",
+                "responsibility"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "role"
+        ],
+        "additionalProperties": false
+      },
+      "description": "本次涉及模块及已有或拟修改方法职责。"
+    },
+    "scenarios": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+          },
+          "scenarioRef": {
+            "type": "object",
+            "required": [
+              "path",
+              "id"
+            ],
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1,
+                "description": "相对当前 JSON 文件的路径；引用对象中的路径须指向本需求内文件。"
+              },
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+              },
+              "locator": {
+                "type": "string",
+                "description": "材料中的章节、页码、时间记录或其他可定位位置。"
+              },
+              "url": {
+                "type": "string",
+                "description": "材料原始外部链接；引用的实体仍由 path 和 id 定位。"
+              }
+            },
+            "additionalProperties": false
+          },
+          "entryPoint": {
+            "type": "string"
+          },
+          "interfaceRefs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "path",
+                "id"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "相对当前 JSON 文件的路径；引用对象中的路径须指向本需求内文件。"
+                },
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+                },
+                "locator": {
+                  "type": "string",
+                  "description": "材料中的章节、页码、时间记录或其他可定位位置。"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "材料原始外部链接；引用的实体仍由 path 和 id 定位。"
+                }
+              },
+              "additionalProperties": false
+            },
+            "description": "场景实际涉及的接口实体引用。"
+          },
+          "dataRefs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "path",
+                "id"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "相对当前 JSON 文件的路径；引用对象中的路径须指向本需求内文件。"
+                },
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+                },
+                "locator": {
+                  "type": "string",
+                  "description": "材料中的章节、页码、时间记录或其他可定位位置。"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "材料原始外部链接；引用的实体仍由 path 和 id 定位。"
+                }
+              },
+              "additionalProperties": false
+            },
+            "description": "场景实际涉及的数据结构实体引用。"
+          },
+          "implementation": {
+            "type": "string"
+          },
+          "diagram": {
+            "type": "string",
+            "description": "Mermaid 源文本，由离线阅读器安全渲染。"
+          },
+          "decisions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "exceptions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "异常与边界必须写清可观察处理结果。"
+          },
+          "acceptanceMappings": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "acceptanceRef",
+                "implementation",
+                "verificationPlan"
+              ],
+              "properties": {
+                "acceptanceRef": {
+                  "type": "object",
+                  "required": [
+                    "path",
+                    "id"
+                  ],
+                  "properties": {
+                    "path": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "相对当前 JSON 文件的路径；引用对象中的路径须指向本需求内文件。"
+                    },
+                    "id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+                    },
+                    "locator": {
+                      "type": "string",
+                      "description": "材料中的章节、页码、时间记录或其他可定位位置。"
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "材料原始外部链接；引用的实体仍由 path 和 id 定位。"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "implementation": {
+                  "type": "string"
+                },
+                "verificationPlan": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "id",
+          "scenarioRef",
+          "implementation",
+          "acceptanceMappings"
+        ],
+        "additionalProperties": false
+      },
+      "description": "按业务行为划分，沿用稳定 S-001 等编号。"
+    },
+    "policies": {
+      "type": "object",
+      "properties": {
+        "transactions": {
+          "type": "string"
+        },
+        "concurrency": {
+          "type": "string"
+        },
+        "idempotency": {
+          "type": "string"
+        },
+        "errors": {
+          "type": "string"
+        },
+        "externalFailures": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "description": "实际涉及的事务、并发、幂等、外部失败和异常策略。"
+    },
+    "codeChanges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+          },
+          "kind": {
+            "enum": [
+              "add",
+              "modify",
+              "delete"
+            ]
+          },
+          "path": {
+            "type": "string",
+            "description": "相对当前 JSON 文件的路径；引用对象中的路径须指向本需求内文件。"
+          },
+          "purpose": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "path",
+          "purpose"
+        ],
+        "additionalProperties": false
+      },
+      "description": "拟新增、修改、删除的代码位置及目的，不代表已实现。"
+    },
+    "overallFlow": {
+      "type": "string",
+      "description": "跨模块整体调用和数据流的文字说明。"
+    },
+    "overallDiagram": {
+      "type": "string",
+      "description": "整体流程的 Mermaid 源文本。"
+    }
+  },
+  "additionalProperties": false,
+  "title": "详细设计 1.0"
+}

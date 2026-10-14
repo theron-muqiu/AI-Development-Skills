@@ -1,0 +1,47 @@
+{
+  "$schema": "ai-devlop://schemas/task/1.0",
+  "schemaVersion": "1.0",
+  "documentType": "task",
+  "requirementId": "XQ20261013-001",
+  "title": "任务清单",
+  "objective": "交付取消未发货订单能力。",
+  "tasks": [
+    {
+      "id": "T001",
+      "name": "实现订单取消",
+      "goal": "按已确认规则取消订单",
+      "scenarioRefs": [
+        {
+          "path": "../ai-devlop-spec/需求分析.json",
+          "id": "S-001"
+        }
+      ],
+      "dependsOn": [],
+      "locations": [
+        "OrderController",
+        "OrderService"
+      ],
+      "designRefs": [
+        {
+          "path": "../ai-devlop-plan/详细设计.json",
+          "id": "P-001"
+        }
+      ],
+      "steps": [
+        "实现状态校验与条件更新",
+        "补充相关测试"
+      ],
+      "completionCriteria": [
+        "正常和异常结果符合需求",
+        "相关测试通过"
+      ],
+      "status": "completed",
+      "acceptanceRefs": [
+        {
+          "path": "../ai-devlop-spec/需求分析.json",
+          "id": "A-001"
+        }
+      ]
+    }
+  ]
+}

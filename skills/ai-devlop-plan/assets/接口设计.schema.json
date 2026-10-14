@@ -1,0 +1,222 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "$schema",
+    "schemaVersion",
+    "documentType",
+    "requirementId",
+    "title",
+    "interfaces"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "ai-devlop://schemas/api/1.0",
+      "description": "本地格式标识 ai-devlop://schemas/<documentType>/1.0，不联网读取。"
+    },
+    "schemaVersion": {
+      "const": "1.0",
+      "description": "文档格式版本，当前固定 1.0，与 CLI 版本独立。"
+    },
+    "documentType": {
+      "const": "api",
+      "description": "文档类别，由文件职责确定，不随标题改变。"
+    },
+    "requirementId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "同一需求的全部文档保持一致。"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "供阅读器显示的文档标题。"
+    },
+    "interfaces": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+          },
+          "name": {
+            "type": "string"
+          },
+          "method": {
+            "enum": [
+              "GET",
+              "POST",
+              "PUT",
+              "PATCH",
+              "DELETE"
+            ]
+          },
+          "path": {
+            "type": "string",
+            "description": "相对当前 JSON 文件的路径；引用对象中的路径须指向本需求内文件。"
+          },
+          "purpose": {
+            "type": "string"
+          },
+          "requestParams": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "location": {
+                  "type": "string"
+                },
+                "dataType": {
+                  "type": "string"
+                },
+                "required": {
+                  "type": "boolean"
+                },
+                "constraints": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "location",
+                "dataType",
+                "required"
+              ],
+              "additionalProperties": false
+            },
+            "description": "参数位置、类型、必填和约束须与接口路径及示例一致。"
+          },
+          "responseFields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "dataType": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "dataType"
+              ],
+              "additionalProperties": false
+            },
+            "description": "返回字段与示例保持一致。"
+          },
+          "requestExample": {
+            "description": "保持真实 JSON 类型；不要因 JavaScript 精度限制修改大整数。"
+          },
+          "responseExample": {
+            "description": "保持真实 JSON 类型、项目包装和状态约定。"
+          },
+          "permissions": {
+            "type": "string"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+                },
+                "code": {
+                  "type": "string"
+                },
+                "condition": {
+                  "type": "string"
+                },
+                "result": {
+                  "type": "string",
+                  "description": "passed、failed 或 not_run，不能用计划验证替代执行结果。"
+                }
+              },
+              "required": [
+                "id",
+                "code",
+                "condition",
+                "result"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "scenarioRefs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "path",
+                "id"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "相对当前 JSON 文件的路径；引用对象中的路径须指向本需求内文件。"
+                },
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+                },
+                "locator": {
+                  "type": "string",
+                  "description": "材料中的章节、页码、时间记录或其他可定位位置。"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "材料原始外部链接；引用的实体仍由 path 和 id 定位。"
+                }
+              },
+              "additionalProperties": false
+            },
+            "description": "关联的需求场景引用，可一对多。"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "method",
+          "path",
+          "purpose",
+          "requestParams",
+          "responseFields",
+          "scenarioRefs"
+        ],
+        "additionalProperties": false
+      },
+      "description": "只列本需求实际需要的接口，沿用项目请求响应约定。"
+    }
+  },
+  "additionalProperties": false,
+  "title": "接口设计 1.0"
+}

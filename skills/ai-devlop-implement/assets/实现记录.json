@@ -1,0 +1,55 @@
+{
+  "$schema": "ai-devlop://schemas/implement/1.0",
+  "schemaVersion": "1.0",
+  "documentType": "implement",
+  "requirementId": "XQ20261013-001",
+  "title": "实现记录",
+  "authorizedScope": "T001",
+  "conclusion": "complete",
+  "taskResults": [
+    {
+      "id": "RUN-001",
+      "taskRef": {
+        "path": "../ai-devlop-task/任务清单.json",
+        "id": "T001"
+      },
+      "recordedAt": "2026-10-13T12:00:00+08:00",
+      "status": "completed",
+      "changes": [
+        {
+          "id": "CH-001",
+          "path": "src/main/java/example/OrderService.java",
+          "description": "增加取消逻辑"
+        }
+      ],
+      "evidenceRefs": [
+        {
+          "path": "实现记录.json",
+          "id": "V-001"
+        }
+      ]
+    }
+  ],
+  "verifications": [
+    {
+      "id": "V-001",
+      "taskRefs": [
+        {
+          "path": "../ai-devlop-task/任务清单.json",
+          "id": "T001"
+        }
+      ],
+      "scenarioRefs": [
+        {
+          "path": "../ai-devlop-spec/需求分析.json",
+          "id": "S-001"
+        }
+      ],
+      "command": "mvn test",
+      "result": "passed",
+      "recordedAt": "2026-10-13T12:01:00+08:00",
+      "summary": "订单服务相关测试通过"
+    }
+  ],
+  "remaining": []
+}

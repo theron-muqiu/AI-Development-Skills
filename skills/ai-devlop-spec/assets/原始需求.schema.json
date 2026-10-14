@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "$schema",
+    "schemaVersion",
+    "documentType",
+    "requirementId",
+    "title",
+    "timezone",
+    "entries"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "ai-devlop://schemas/raw/1.0",
+      "description": "本地格式标识 ai-devlop://schemas/<documentType>/1.0，不联网读取。"
+    },
+    "schemaVersion": {
+      "const": "1.0",
+      "description": "文档格式版本，当前固定 1.0，与 CLI 版本独立。"
+    },
+    "documentType": {
+      "const": "raw",
+      "description": "文档类别，由文件职责确定，不随标题改变。"
+    },
+    "requirementId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "同一需求的全部文档保持一致。"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "供阅读器显示的文档标题。"
+    },
+    "timezone": {
+      "type": "string",
+      "description": "原始输入留存的默认时区。"
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "真实消息时间；无法取得时用保存时间并在 timeSource 说明。"
+          },
+          "timeSource": {
+            "type": "string",
+            "description": "说明时间来自消息元数据还是实际保存时间。"
+          },
+          "skill": {
+            "enum": [
+              "spec",
+              "clarify"
+            ]
+          },
+          "inputType": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string",
+            "description": "保留原文或可阅读说明，不得用 AI 摘要替代用户输入。"
+          },
+          "questionContext": {
+            "type": "string",
+            "description": "简短回答所依赖的问题和选项，只记录理解原意必需的上下文。"
+          },
+          "attachments": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "path",
+                "source"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "description": "相对当前 JSON 文件的路径；引用对象中的路径须指向本需求内文件。"
+                },
+                "source": {
+                  "type": "string"
+                },
+                "note": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            },
+            "description": "附件只存相对路径与原来源，正文不嵌入文件内容。"
+          }
+        },
+        "required": [
+          "id",
+          "timestamp",
+          "timeSource",
+          "skill",
+          "inputType",
+          "text"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false,
+  "title": "原始需求 1.0"
+}

@@ -33,6 +33,12 @@ class PackageTests(unittest.TestCase):
                     self.assertIsNotNone(archived)
                     self.assertEqual(archived.read(), original)
             self.assertIn("ai-devlop = ai_devlop.cli:main", wheel.read(f"ai_devlop_cli-{__version__}.dist-info/entry_points.txt").decode())
+            for asset in ("reader.css", "reader.js", "vendor.js", "vendor.js.LEGAL.txt"):
+                original = (PROJECT / "resources" / "documents" / asset).read_bytes()
+                self.assertEqual(wheel.read(f"ai_devlop/resources/documents/{asset}"), original)
+                archived = sdist.extractfile(f"ai_devlop_cli-{__version__}/resources/documents/{asset}")
+                self.assertIsNotNone(archived)
+                self.assertEqual(archived.read(), original)
 
     @unittest.skipUnless(shutil.which("uv"), "uv is required for the executable smoke test")
     def test_isolated_wheel_entrypoint_both_agents(self):
@@ -70,6 +76,13 @@ class PackageTests(unittest.TestCase):
                     self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
                 self.assertEqual(set(p.name for p in (project / folder / "skills").iterdir()), set(SKILLS))
             self.assertFalse((hermes_home / "config.yaml").exists())
+            requirement = root / "中文 需求"
+            shutil.copytree(PROJECT / "tests" / "fixtures" / "valid-requirement", requirement)
+            for action in ("validate", "render"):
+                result = subprocess.run(prefix + ["docs", action, str(requirement)], cwd=root,
+                                        env=env, capture_output=True, encoding="utf-8", timeout=60)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertTrue((requirement / "index.html").is_file())
 
 
 if __name__ == "__main__":

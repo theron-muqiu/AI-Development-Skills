@@ -4,7 +4,7 @@ AI 主导开发全流程，人工只在关键节点审核。
 
 本项目以 **AI 主导开发** 为核心，旨在将从需求分析、方案设计到开发落地的关键环节沉淀为可复用技能。AI 持续推进各阶段工作，人工主要审核关键成果，仅在存在重要歧义或需要纠偏时介入，形成高效、可追踪的开发流程。
 
-本项目为 **Codex** 和 **Hermes** 提供需求分析、需求澄清、技术设计、任务拆分与实现五个技能，通过统一的场景编号关联需求与设计文档，逐步完善从需求到落地的开发流程。
+本项目为 **Codex** 和 **Hermes** 提供需求分析、需求澄清、技术设计、任务拆分与实现五个技能。新需求以结构化 JSON 为维护源，通过稳定编号关联各阶段，并生成可离线阅读的 HTML。
 
 [快速开始](#快速开始) · [使用](#使用) · [安装与管理](#安装与管理) · [开发](#开发) · [分支管理](#分支管理) · [常见问题](#常见问题)
 
@@ -17,13 +17,13 @@ AI 主导开发全流程，人工只在关键节点审核。
 
 | 技能 | 负责什么 | 输出文档 |
 | --- | --- | --- |
-| `ai-devlop-spec` | 需求整理、业务场景、验收标准 | `需求分析.md`、原始输入留存 |
+| `ai-devlop-spec` | 需求整理、业务场景、验收标准 | `需求分析.json`、`原始需求.json` |
 | `ai-devlop-clarify` | 专项澄清并同步已有需求、设计及任务，保持上下文一致 | 修订原有文档、原始输入留存；不新增澄清报告 |
-| `ai-devlop-plan` | 场景实现方案、接口与数据结构设计 | `详细设计.md`、`接口设计.md`、`数据结构设计.md` |
-| `ai-devlop-task` | 将需求实现划分为一个或多个任务，明确范围、依赖与完成标准 | `任务清单.md` |
-| `ai-devlop-implement` | 按任务依赖完成全部实现、验证并同步任务状态 | 项目代码与必要测试、`实现记录.md` |
+| `ai-devlop-plan` | 场景实现方案、接口与数据结构设计 | `详细设计.json`、`接口设计.json`、`数据结构设计.json` |
+| `ai-devlop-task` | 将需求实现划分为一个或多个任务，明确范围、依赖与完成标准 | `任务清单.json` |
+| `ai-devlop-implement` | 按任务依赖完成全部实现、验证并同步任务状态 | 项目代码与必要测试、`实现记录.json` |
 
-当前源码覆盖需求分析、需求澄清、技术设计、任务拆分与实现。需求、澄清、设计和任务技能负责文档规划；明确调用实现技能后，按任务修改代码、执行必要验证并更新完成状态，不自动提交、发布或部署。任务勾选以真实完成标准为依据。
+当前源码覆盖需求分析、需求澄清、技术设计、任务拆分与实现。需求、澄清、设计和任务技能负责文档规划；明确调用实现技能后，按任务修改代码、执行必要验证并更新完成状态，不自动提交、发布或部署。任务状态以真实完成标准和验证依据为准。
 
 ## 快速开始
 
@@ -34,7 +34,7 @@ AI 主导开发全流程，人工只在关键节点审核。
 - CLI 使用 **Python 3.10+**；uv 可以按需获取 Python。
 
 > [!NOTE]
-> CLI 从 GitHub 版本标签获取，尚未发布到 PyPI。以下命令需要能够访问 GitHub。
+> 下列固定标签 `v0.3.2` 是正式版，继续使用 Markdown 文档。JSON/HTML 功能通过单独的 `v0.4.0rc1` 预发布版本试用，正式版安装命令保持不变。
 
 ### 2. 安装技能
 
@@ -52,6 +52,19 @@ uvx --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.3.2
 
 两种模式均安装 `ai-devlop-spec`、`ai-devlop-clarify`、`ai-devlop-plan`、`ai-devlop-task` 和 `ai-devlop-implement`。`v0.3.2` 包含完整五技能流程，需求模板新增前置业务术语、逐项出处及有序列表规范；原始输入使用单文件汇总、时间正序及附件链接；原 `v0.2.0` 为四技能组合，`v0.1.0` 仅包含需求分析与技术设计。首次获取或构建工具可能需要联网；技能与模板从安装包读取，不另外下载。
 
+### 试用 JSON/HTML 预发布版本
+
+`v0.4.0rc1` 可从 GitHub 标签运行。建议先在独立测试项目做项目级安装，不更新现有用户级技能；Hermes 测试项目须为 Git 仓库，并在安装后按其项目技能规则信任目录。
+
+```bash
+# Codex：指定一个已经存在的测试项目目录
+uvx --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.4.0rc1" ai-devlop init --agent codex --project "./my-test-project"
+
+# 不安装技能，直接校验和生成某个 JSON 需求的离线阅读页
+uvx --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.4.0rc1" ai-devlop docs validate "./my-test-project/docs/requirements/XQ20261009-001"
+uvx --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.4.0rc1" ai-devlop docs render "./my-test-project/docs/requirements/XQ20261009-001"
+```
+
 ### 3. 开始使用
 
 开启新的 Agent 会话，先调用需求分析技能，需要专项澄清时调用澄清技能，确认需求后再调用设计技能，设计明确后调用任务拆分技能，审核任务后调用实现技能。若 Codex 未显示新技能，可尝试重启。
@@ -65,13 +78,13 @@ uvx --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.3.2
 ```text
 $ai-devlop-spec 支持用户取消未发货订单。需求编号为 XQ20261009-001，请澄清取消条件、退款规则和异常场景。
 
-$ai-devlop-clarify 检查 docs/requirements/XQ20261009-001/ai-devlop-spec/需求分析.md 中的关键歧义，逐项确认并同步调整已有需求、设计及任务文档。
+$ai-devlop-clarify 检查 docs/requirements/XQ20261009-001/ai-devlop-spec/需求分析.json 中的关键歧义，逐项确认并同步调整已有需求、设计及任务文档。
 
-$ai-devlop-plan 根据 docs/requirements/XQ20261009-001/ai-devlop-spec/需求分析.md 和当前项目生成技术设计。
+$ai-devlop-plan 根据 docs/requirements/XQ20261009-001/ai-devlop-spec/需求分析.json 和当前项目生成技术设计。
 
 $ai-devlop-task 根据 docs/requirements/XQ20261009-001/ 下的需求与设计，将实现划分为一个或多个任务。
 
-$ai-devlop-implement 根据 docs/requirements/XQ20261009-001/ai-devlop-task/任务清单.md 完成全部任务并验证结果。
+$ai-devlop-implement 根据 docs/requirements/XQ20261009-001/ai-devlop-task/任务清单.json 完成全部任务并验证结果。
 ```
 
 ### Hermes
@@ -79,42 +92,55 @@ $ai-devlop-implement 根据 docs/requirements/XQ20261009-001/ai-devlop-task/任�
 ```text
 /ai-devlop-spec 支持用户取消未发货订单。需求编号为 XQ20261009-001，请澄清取消条件、退款规则和异常场景。
 
-/ai-devlop-clarify 检查 docs/requirements/XQ20261009-001/ai-devlop-spec/需求分析.md 中的关键歧义，逐项确认并同步调整已有需求、设计及任务文档。
+/ai-devlop-clarify 检查 docs/requirements/XQ20261009-001/ai-devlop-spec/需求分析.json 中的关键歧义，逐项确认并同步调整已有需求、设计及任务文档。
 
-/ai-devlop-plan 根据 docs/requirements/XQ20261009-001/ai-devlop-spec/需求分析.md 和当前项目生成技术设计。
+/ai-devlop-plan 根据 docs/requirements/XQ20261009-001/ai-devlop-spec/需求分析.json 和当前项目生成技术设计。
 
 /ai-devlop-task 根据 docs/requirements/XQ20261009-001/ 下的需求与设计，将实现划分为一个或多个任务。
 
-/ai-devlop-implement 根据 docs/requirements/XQ20261009-001/ai-devlop-task/任务清单.md 完成全部任务并验证结果。
+/ai-devlop-implement 根据 docs/requirements/XQ20261009-001/ai-devlop-task/任务清单.json 完成全部任务并验证结果。
 ```
 
-需求分析负责明确“做什么”，专项澄清用于检查已有需求、逐项确认关键缺口并立即同步已有需求、设计及任务的对应章节，不生成独立澄清文档；没有关键歧义时无需额外澄清。技术设计负责说明“如何做”。设计阶段沿用需求中的场景编号；任务拆分按业务交付结果划分，简单需求可只有一个任务，每个任务写清场景覆盖、实现位置、前置依赖和完成标准。需求仍有关键歧义时，应先澄清。任务清单生成后不会自动开始实施；调用实现技能后，默认按依赖顺序完成全部未完成任务，验证通过才勾选。遇到阻塞时保留真实未完成状态，继续不受影响的任务。
+需求分析负责明确“做什么”，专项澄清用于检查已有需求、逐项确认关键缺口并立即同步已有需求、设计及任务的对应实体，不生成独立澄清文档；没有关键歧义时无需额外澄清。技术设计负责说明“如何做”。设计阶段沿用需求中的场景编号；任务拆分按业务交付结果划分，简单需求可只有一个任务，每个任务写清场景覆盖、实现位置、前置依赖和完成标准。需求仍有关键歧义时，应先澄清。任务清单生成后不会自动开始实施；调用实现技能后，默认按依赖顺序完成全部未完成任务，达到完成标准且验证通过才标为 `completed`。遇到阻塞时保留真实未完成状态，继续不受影响的任务。
 
 默认输出结构：
 
 ```text
 docs/requirements/XQ20261009-001/
+├── index.html
 ├── 原始需求/
-│   ├── 原始需求.md
+│   ├── 原始需求.json
 │   └── 输入文件/
 │       └── 20261009-143025-123-业务需求.docx
 ├── ai-devlop-spec/
-│   └── 需求分析.md
+│   └── 需求分析.json
 ├── ai-devlop-plan/
-│   ├── 详细设计.md
-│   ├── 接口设计.md
-│   └── 数据结构设计.md
+│   ├── 详细设计.json
+│   ├── 接口设计.json
+│   └── 数据结构设计.json
 ├── ai-devlop-task/
-│   └── 任务清单.md
+│   └── 任务清单.json
 └── ai-devlop-implement/
-    └── 实现记录.md
+    └── 实现记录.json
 ```
 
 需求编号优先使用用户输入明确指定的编号，否则读取输入文件中的编号；同一需求在不同技能间沿用编号。没有编号时，按执行当天日期自动生成 `XQYYYYMMDD-XXX`，从 `001` 开始，目录或文件已占用则自增。需求编号写入产出文档头部。
 
 生成新文档的技能分别落地到以技能名命名的子目录；澄清技能在原位置修订已有文档，不创建独立澄清产出目录；实现代码与测试仍放在项目规定位置，任务状态在原任务清单中更新。用户指定输出根目录时仍保留 `<需求编号>/<技能名>/` 结构；明确指定完整文件路径或修订既有文件时按指定位置处理。已有文档会先读取，再按本次需求修订。
 
-`spec` 和 `clarify` 共用同一需求下的 `原始需求/原始需求.md`，所有调用输入、补充、纠正和澄清回答按时间正序列在这一个文件中。文件头统一注明需求编号和时区，每条仅用时间、技能、输入类型标题及用户原文；必要时补充来源和简短回答的问题上下文。输入文件与附件单独保存在 `原始需求/输入文件/`，对应记录用相对链接指引，不重复嵌入文件正文；副本用时间戳加原文件名命名，重名追加序号。历史原文保留，敏感值脱敏，未取得的材料注明来源。留存不代表业务规则已确认；用户明确禁止写文件时不留存。
+`spec` 和 `clarify` 共用 `原始需求/原始需求.json`。输入记录保留真实时间、来源、技能、输入类型、用户原文和必要的问题上下文，并按时间正序排列；附件单独保存在 `输入文件/`，JSON 只记录相对路径和原来源。历史原文保留，敏感值脱敏。留存不代表业务规则已确认；用户明确禁止写文件时不留存。
+
+### JSON 校验与离线阅读
+
+新格式的七类 JSON 使用各技能 `assets/` 下的 Schema 和完整示例作为编写基准。需求结论通过 `sourceRefs` 标注出处，跨文档引用采用相对文件路径与稳定实体 ID。人阅读的 `index.html` 是生成时快照，JSON 更新后需重新生成。
+
+```bash
+# 在本仓库源码环境运行；发布后也可用新版本 ai-devlop 直接调用
+uv run ai-devlop docs validate docs/requirements/XQ20261009-001
+uv run ai-devlop docs render docs/requirements/XQ20261009-001
+```
+
+`validate` 可用 `--format json` 输出机器可读诊断；两个命令均可重复传入 `--document <文件>` 指定需求目录内的自定义位置。`render` 先校验，成功才替换需求目录中的 `index.html`。页面将脚本和正文嵌入文件，离线双击可用；附件链接需要携带对应的需求目录。旧 Markdown 需求继续按旧格式修订，需要迁移时按 [JSON 迁移指南](docs/JSON迁移指南.md)逐项转换并校验，保留原文件；迁移完成后以 JSON 为维护源，不双写正文。
 
 ## 安装与管理
 

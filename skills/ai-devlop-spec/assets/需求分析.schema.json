@@ -1,0 +1,672 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "$schema",
+    "schemaVersion",
+    "documentType",
+    "requirementId",
+    "title",
+    "terms",
+    "goals",
+    "scope",
+    "rules",
+    "scenarios"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "ai-devlop://schemas/spec/1.0",
+      "description": "本地格式标识 ai-devlop://schemas/<documentType>/1.0，不联网读取。"
+    },
+    "schemaVersion": {
+      "const": "1.0",
+      "description": "文档格式版本，当前固定 1.0，与 CLI 版本独立。"
+    },
+    "documentType": {
+      "const": "spec",
+      "description": "文档类别，由文件职责确定，不随标题改变。"
+    },
+    "requirementId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "同一需求的全部文档保持一致。"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "供阅读器显示的文档标题。"
+    },
+    "terms": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+          },
+          "name": {
+            "type": "string"
+          },
+          "meaning": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string",
+            "description": "包含与排除范围均依据已确认材料。"
+          },
+          "aliases": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "术语别名，没有则为空数组。"
+          },
+          "sourceRefs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "path",
+                "id"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "相对当前 JSON 文件的路径；引用对象中的路径须指向本需求内文件。"
+                },
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+                },
+                "locator": {
+                  "type": "string",
+                  "description": "材料中的章节、页码、时间记录或其他可定位位置。"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "材料原始外部链接；引用的实体仍由 path 和 id 定位。"
+                }
+              },
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "description": "逐项指向支撑结论的原始输入或材料实体，不能写笼统来源。"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "meaning",
+          "sourceRefs"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "goals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+          },
+          "text": {
+            "type": "string",
+            "description": "保留原文或可阅读说明，不得用 AI 摘要替代用户输入。"
+          },
+          "sourceRefs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "path",
+                "id"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "相对当前 JSON 文件的路径；引用对象中的路径须指向本需求内文件。"
+                },
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+                },
+                "locator": {
+                  "type": "string",
+                  "description": "材料中的章节、页码、时间记录或其他可定位位置。"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "材料原始外部链接；引用的实体仍由 path 和 id 定位。"
+                }
+              },
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "description": "逐项指向支撑结论的原始输入或材料实体，不能写笼统来源。"
+          }
+        },
+        "required": [
+          "id",
+          "text",
+          "sourceRefs"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "scope": {
+      "type": "object",
+      "properties": {
+        "included": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+              },
+              "text": {
+                "type": "string",
+                "description": "保留原文或可阅读说明，不得用 AI 摘要替代用户输入。"
+              },
+              "sourceRefs": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "path",
+                    "id"
+                  ],
+                  "properties": {
+                    "path": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "相对当前 JSON 文件的路径；引用对象中的路径须指向本需求内文件。"
+                    },
+                    "id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+                    },
+                    "locator": {
+                      "type": "string",
+                      "description": "材料中的章节、页码、时间记录或其他可定位位置。"
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "材料原始外部链接；引用的实体仍由 path 和 id 定位。"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "minItems": 1,
+                "description": "逐项指向支撑结论的原始输入或材料实体，不能写笼统来源。"
+              }
+            },
+            "required": [
+              "id",
+              "text",
+              "sourceRefs"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "excluded": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+              },
+              "text": {
+                "type": "string",
+                "description": "保留原文或可阅读说明，不得用 AI 摘要替代用户输入。"
+              },
+              "sourceRefs": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "path",
+                    "id"
+                  ],
+                  "properties": {
+                    "path": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "相对当前 JSON 文件的路径；引用对象中的路径须指向本需求内文件。"
+                    },
+                    "id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+                    },
+                    "locator": {
+                      "type": "string",
+                      "description": "材料中的章节、页码、时间记录或其他可定位位置。"
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "材料原始外部链接；引用的实体仍由 path 和 id 定位。"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "minItems": 1,
+                "description": "逐项指向支撑结论的原始输入或材料实体，不能写笼统来源。"
+              }
+            },
+            "required": [
+              "id",
+              "text",
+              "sourceRefs"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "included",
+        "excluded"
+      ],
+      "additionalProperties": false,
+      "description": "包含与排除范围均依据已确认材料。"
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+          },
+          "text": {
+            "type": "string",
+            "description": "保留原文或可阅读说明，不得用 AI 摘要替代用户输入。"
+          },
+          "sourceRefs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "path",
+                "id"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "相对当前 JSON 文件的路径；引用对象中的路径须指向本需求内文件。"
+                },
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+                },
+                "locator": {
+                  "type": "string",
+                  "description": "材料中的章节、页码、时间记录或其他可定位位置。"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "材料原始外部链接；引用的实体仍由 path 和 id 定位。"
+                }
+              },
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "description": "逐项指向支撑结论的原始输入或材料实体，不能写笼统来源。"
+          }
+        },
+        "required": [
+          "id",
+          "text",
+          "sourceRefs"
+        ],
+        "additionalProperties": false
+      },
+      "description": "影响业务结果的核心规则，每项具有出处。"
+    },
+    "scenarios": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+          },
+          "name": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "trigger": {
+            "type": "string"
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+                },
+                "text": {
+                  "type": "string",
+                  "description": "保留原文或可阅读说明，不得用 AI 摘要替代用户输入。"
+                },
+                "sourceRefs": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "path",
+                      "id"
+                    ],
+                    "properties": {
+                      "path": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "相对当前 JSON 文件的路径；引用对象中的路径须指向本需求内文件。"
+                      },
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+                      },
+                      "locator": {
+                        "type": "string",
+                        "description": "材料中的章节、页码、时间记录或其他可定位位置。"
+                      },
+                      "url": {
+                        "type": "string",
+                        "description": "材料原始外部链接；引用的实体仍由 path 和 id 定位。"
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "minItems": 1,
+                  "description": "逐项指向支撑结论的原始输入或材料实体，不能写笼统来源。"
+                }
+              },
+              "required": [
+                "id",
+                "text",
+                "sourceRefs"
+              ],
+              "additionalProperties": false
+            },
+            "description": "按处理顺序表达业务步骤或实施步骤。"
+          },
+          "exceptions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+                },
+                "condition": {
+                  "type": "string"
+                },
+                "result": {
+                  "type": "string",
+                  "description": "passed、failed 或 not_run，不能用计划验证替代执行结果。"
+                },
+                "sourceRefs": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "path",
+                      "id"
+                    ],
+                    "properties": {
+                      "path": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "相对当前 JSON 文件的路径；引用对象中的路径须指向本需求内文件。"
+                      },
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+                      },
+                      "locator": {
+                        "type": "string",
+                        "description": "材料中的章节、页码、时间记录或其他可定位位置。"
+                      },
+                      "url": {
+                        "type": "string",
+                        "description": "材料原始外部链接；引用的实体仍由 path 和 id 定位。"
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "minItems": 1,
+                  "description": "逐项指向支撑结论的原始输入或材料实体，不能写笼统来源。"
+                }
+              },
+              "required": [
+                "id",
+                "condition",
+                "result",
+                "sourceRefs"
+              ],
+              "additionalProperties": false
+            },
+            "description": "异常与边界必须写清可观察处理结果。"
+          },
+          "acceptance": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+                },
+                "precondition": {
+                  "type": "string"
+                },
+                "action": {
+                  "type": "string"
+                },
+                "expected": {
+                  "type": "string"
+                },
+                "sourceRefs": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "path",
+                      "id"
+                    ],
+                    "properties": {
+                      "path": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "相对当前 JSON 文件的路径；引用对象中的路径须指向本需求内文件。"
+                      },
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+                      },
+                      "locator": {
+                        "type": "string",
+                        "description": "材料中的章节、页码、时间记录或其他可定位位置。"
+                      },
+                      "url": {
+                        "type": "string",
+                        "description": "材料原始外部链接；引用的实体仍由 path 和 id 定位。"
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "minItems": 1,
+                  "description": "逐项指向支撑结论的原始输入或材料实体，不能写笼统来源。"
+                }
+              },
+              "required": [
+                "id",
+                "precondition",
+                "action",
+                "expected",
+                "sourceRefs"
+              ],
+              "additionalProperties": false
+            },
+            "description": "可观察、可验证的业务结果。"
+          },
+          "diagram": {
+            "type": "string",
+            "description": "Mermaid 源文本，由离线阅读器安全渲染。"
+          },
+          "sourceRefs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "path",
+                "id"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "相对当前 JSON 文件的路径；引用对象中的路径须指向本需求内文件。"
+                },
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+                },
+                "locator": {
+                  "type": "string",
+                  "description": "材料中的章节、页码、时间记录或其他可定位位置。"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "材料原始外部链接；引用的实体仍由 path 和 id 定位。"
+                }
+              },
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "description": "逐项指向支撑结论的原始输入或材料实体，不能写笼统来源。"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "summary",
+          "steps",
+          "exceptions",
+          "acceptance",
+          "sourceRefs"
+        ],
+        "additionalProperties": false
+      },
+      "description": "按业务行为划分，沿用稳定 S-001 等编号。"
+    },
+    "mainFlow": {
+      "type": "string",
+      "description": "核心业务流程的文字说明。"
+    },
+    "stateTransitions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+          },
+          "from": {
+            "type": "string"
+          },
+          "action": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "allowed": {
+            "type": "boolean"
+          },
+          "sourceRefs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "path",
+                "id"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "相对当前 JSON 文件的路径；引用对象中的路径须指向本需求内文件。"
+                },
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+                },
+                "locator": {
+                  "type": "string",
+                  "description": "材料中的章节、页码、时间记录或其他可定位位置。"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "材料原始外部链接；引用的实体仍由 path 和 id 定位。"
+                }
+              },
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "description": "逐项指向支撑结论的原始输入或材料实体，不能写笼统来源。"
+          }
+        },
+        "required": [
+          "id",
+          "from",
+          "action",
+          "to",
+          "allowed",
+          "sourceRefs"
+        ],
+        "additionalProperties": false
+      },
+      "description": "仅在需求实际存在状态变化时填写。"
+    }
+  },
+  "additionalProperties": false,
+  "title": "需求分析 1.0"
+}

@@ -2,6 +2,7 @@
 
 import contextlib
 import copy
+from io import BytesIO
 import io
 import os
 from pathlib import Path
@@ -9,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import zipfile
 from unittest.mock import patch
 
 from ai_devlop import cli
@@ -39,6 +41,25 @@ class InstallerTests(unittest.TestCase):
         for name in cli.SKILLS:
             newer[name]["SKILL.md"] += b"\nNew package content.\n"
         return newer
+
+    @unittest.skipUnless(subprocess.run(["git", "rev-parse", "--verify", "v0.3.2"],
+                                        cwd=Path(__file__).parents[1], capture_output=True).returncode == 0,
+                         "v0.3.2 tag is unavailable")
+    def test_v032_bundle_updates_to_json_assets(self):
+        """A real five-skill Markdown release can upgrade without forced overwrite."""
+        archived = subprocess.run(["git", "archive", "--format=zip", "v0.3.2", "skills"],
+                                  cwd=Path(__file__).parents[1], capture_output=True, check=True).stdout
+        old = {name: {} for name in cli.SKILLS}
+        with zipfile.ZipFile(BytesIO(archived)) as bundle:
+            for entry in bundle.namelist():
+                parts = entry.split("/")
+                if len(parts) >= 3 and parts[1] in old and not entry.endswith("/"):
+                    old[parts[1]]["/".join(parts[2:])] = bundle.read(entry)
+        self.install(old)
+        self.assertTrue((self.target.skills / "ai-devlop-spec" / "assets" / "需求分析.md").exists())
+        self.install(update=True)
+        self.assertFalse((self.target.skills / "ai-devlop-spec" / "assets" / "需求分析.md").exists())
+        self.assertTrue((self.target.skills / "ai-devlop-spec" / "assets" / "需求分析.schema.json").exists())
 
     def test_first_install_both_skills_and_manifest(self):
         """Both complete directories and their hash baseline must be present."""

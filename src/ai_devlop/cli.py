@@ -24,10 +24,11 @@ LEGACY_SKILLS = SKILLS[:2]
 PRE_IMPLEMENT_SKILLS = SKILLS[:3]
 PRE_CLARIFY_SKILLS = SKILLS[:4]
 REQUIRED_ASSETS = {
-    SKILLS[0]: ("需求分析.md",),
-    SKILLS[1]: ("详细设计.md", "接口设计.md", "数据结构设计.md"),
-    SKILLS[2]: ("任务清单.md",),
-    SKILLS[3]: ("实现记录.md",),
+    SKILLS[0]: ("需求分析.json", "需求分析.schema.json", "原始需求.json", "原始需求.schema.json", "文档格式.md"),
+    SKILLS[1]: ("详细设计.json", "详细设计.schema.json", "接口设计.json", "接口设计.schema.json",
+                "数据结构设计.json", "数据结构设计.schema.json"),
+    SKILLS[2]: ("任务清单.json", "任务清单.schema.json"),
+    SKILLS[3]: ("实现记录.json", "实现记录.schema.json"),
     SKILLS[4]: (),
 }
 
@@ -342,9 +343,16 @@ def show_status(target: Target, payload: dict[str, dict[str, bytes]]) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     """Expose only the two supported agents and whole-bundle operations."""
-    parser = argparse.ArgumentParser(prog="ai-devlop", description="为 Codex 或 Hermes 完整安装需求分析和设计技能。")
+    parser = argparse.ArgumentParser(prog="ai-devlop", description="安装五个开发技能，并校验或渲染结构化需求文档。")
     parser.add_argument("--version", action="version", version=__version__)
     commands = parser.add_subparsers(dest="command")
+    docs = commands.add_parser("docs", help="校验或渲染结构化需求文档")
+    docs_commands = docs.add_subparsers(dest="docs_command", required=True)
+    for docs_command in ("validate", "render"):
+        docs_parser = docs_commands.add_parser(docs_command)
+        docs_parser.add_argument("requirement_dir", type=Path)
+        docs_parser.add_argument("--document", action="append", type=Path, default=[])
+        docs_parser.add_argument("--format", choices=("text", "json"), default="text")
     for command, help_text in (("install", "用户级安装全部技能"), ("init", "项目级安装全部技能"),
                                ("status", "查看安装状态"), ("update", "用当前包更新全部技能")):
         sub = commands.add_parser(command, help=help_text)
@@ -360,6 +368,9 @@ def main(argv: list[str] | None = None) -> int:
     if not args.command:
         parser.print_help()
         return 0
+    if args.command == "docs":
+        from .documents import run_docs
+        return run_docs(args)
     try:
         project = str(Path.cwd()) if getattr(args, "here", False) else getattr(args, "project", None)
         target = resolve_target(args.agent, project)

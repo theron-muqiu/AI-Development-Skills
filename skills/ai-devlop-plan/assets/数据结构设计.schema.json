@@ -1,0 +1,436 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "$schema",
+    "schemaVersion",
+    "documentType",
+    "requirementId",
+    "title",
+    "relationships",
+    "tables",
+    "redis",
+    "messages",
+    "otherStructures"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "ai-devlop://schemas/data/1.0",
+      "description": "本地格式标识 ai-devlop://schemas/<documentType>/1.0，不联网读取。"
+    },
+    "schemaVersion": {
+      "const": "1.0",
+      "description": "文档格式版本，当前固定 1.0，与 CLI 版本独立。"
+    },
+    "documentType": {
+      "const": "data",
+      "description": "文档类别，由文件职责确定，不随标题改变。"
+    },
+    "requirementId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "同一需求的全部文档保持一致。"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "供阅读器显示的文档标题。"
+    },
+    "relationships": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+          },
+          "from": {
+            "type": "object",
+            "required": [
+              "path",
+              "id"
+            ],
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1,
+                "description": "相对当前 JSON 文件的路径；引用对象中的路径须指向本需求内文件。"
+              },
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+              },
+              "locator": {
+                "type": "string",
+                "description": "材料中的章节、页码、时间记录或其他可定位位置。"
+              },
+              "url": {
+                "type": "string",
+                "description": "材料原始外部链接；引用的实体仍由 path 和 id 定位。"
+              }
+            },
+            "additionalProperties": false
+          },
+          "to": {
+            "type": "object",
+            "required": [
+              "path",
+              "id"
+            ],
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1,
+                "description": "相对当前 JSON 文件的路径；引用对象中的路径须指向本需求内文件。"
+              },
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+              },
+              "locator": {
+                "type": "string",
+                "description": "材料中的章节、页码、时间记录或其他可定位位置。"
+              },
+              "url": {
+                "type": "string",
+                "description": "材料原始外部链接；引用的实体仍由 path 和 id 定位。"
+              }
+            },
+            "additionalProperties": false
+          },
+          "kind": {
+            "type": "string"
+          },
+          "physicalForeignKey": {
+            "type": "boolean"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "from",
+          "to",
+          "kind",
+          "physicalForeignKey"
+        ],
+        "additionalProperties": false
+      },
+      "description": "逻辑关系与物理外键是否存在需分别说明。"
+    },
+    "tables": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+          },
+          "name": {
+            "type": "string"
+          },
+          "change": {
+            "enum": [
+              "existing",
+              "add",
+              "modify"
+            ]
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "dataType": {
+                  "type": "string"
+                },
+                "nullable": {
+                  "type": "boolean"
+                },
+                "default": {
+                  "type": "object",
+                  "required": [
+                    "kind"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "unset",
+                        "null",
+                        "literal",
+                        "expression"
+                      ]
+                    },
+                    "value": {}
+                  },
+                  "additionalProperties": false,
+                  "allOf": [
+                    {
+                      "if": {
+                        "properties": {
+                          "kind": {
+                            "enum": [
+                              "literal",
+                              "expression"
+                            ]
+                          }
+                        }
+                      },
+                      "then": {
+                        "required": [
+                          "value"
+                        ]
+                      }
+                    },
+                    {
+                      "if": {
+                        "properties": {
+                          "kind": {
+                            "enum": [
+                              "unset",
+                              "null"
+                            ]
+                          }
+                        }
+                      },
+                      "then": {
+                        "not": {
+                          "required": [
+                            "value"
+                          ]
+                        }
+                      }
+                    }
+                  ],
+                  "description": "用 kind 区分 unset、null、literal、expression；后两类带 value。"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "dataType",
+                "nullable",
+                "default"
+              ],
+              "additionalProperties": false
+            },
+            "description": "字段类型、可空、默认值与说明。"
+          },
+          "indexes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "fields": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "字段类型、可空、默认值与说明。"
+                },
+                "kind": {
+                  "enum": [
+                    "primary",
+                    "unique",
+                    "normal"
+                  ]
+                },
+                "purpose": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "fields",
+                "kind"
+              ],
+              "additionalProperties": false
+            },
+            "description": "联合索引保留字段顺序并说明用途。"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "fields",
+          "indexes"
+        ],
+        "additionalProperties": false
+      },
+      "description": "实际使用或拟变更的表，字段及索引需与项目结构一致。"
+    },
+    "redis": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+          },
+          "key": {
+            "type": "string"
+          },
+          "dataType": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "dataType": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "dataType"
+              ],
+              "additionalProperties": false
+            },
+            "description": "字段类型、可空、默认值与说明。"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "key",
+          "dataType"
+        ],
+        "additionalProperties": false
+      },
+      "description": "仅实际涉及时填写缓存结构。"
+    },
+    "messages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+          },
+          "topic": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "dataType": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "dataType"
+              ],
+              "additionalProperties": false
+            },
+            "description": "字段类型、可空、默认值与说明。"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "topic"
+        ],
+        "additionalProperties": false
+      },
+      "description": "仅实际涉及时填写消息结构。"
+    },
+    "otherStructures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+          },
+          "name": {
+            "type": "string"
+          },
+          "dataType": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "dataType"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "migrationNotes": {
+      "type": "string",
+      "description": "存量结构变更时说明旧数据与兼容、迁移影响，不在设计阶段执行迁移。"
+    }
+  },
+  "additionalProperties": false,
+  "title": "数据结构设计 1.0"
+}

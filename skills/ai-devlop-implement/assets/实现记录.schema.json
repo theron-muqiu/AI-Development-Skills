@@ -1,0 +1,287 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "$schema",
+    "schemaVersion",
+    "documentType",
+    "requirementId",
+    "title",
+    "authorizedScope",
+    "conclusion",
+    "taskResults",
+    "verifications",
+    "remaining"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "ai-devlop://schemas/implement/1.0",
+      "description": "本地格式标识 ai-devlop://schemas/<documentType>/1.0，不联网读取。"
+    },
+    "schemaVersion": {
+      "const": "1.0",
+      "description": "文档格式版本，当前固定 1.0，与 CLI 版本独立。"
+    },
+    "documentType": {
+      "const": "implement",
+      "description": "文档类别，由文件职责确定，不随标题改变。"
+    },
+    "requirementId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "同一需求的全部文档保持一致。"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "供阅读器显示的文档标题。"
+    },
+    "authorizedScope": {
+      "type": "string"
+    },
+    "conclusion": {
+      "enum": [
+        "complete",
+        "partial"
+      ],
+      "description": "只有全部任务已完成且必要检查通过，才能写 complete。"
+    },
+    "taskResults": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+          },
+          "taskRef": {
+            "type": "object",
+            "required": [
+              "path",
+              "id"
+            ],
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1,
+                "description": "相对当前 JSON 文件的路径；引用对象中的路径须指向本需求内文件。"
+              },
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+              },
+              "locator": {
+                "type": "string",
+                "description": "材料中的章节、页码、时间记录或其他可定位位置。"
+              },
+              "url": {
+                "type": "string",
+                "description": "材料原始外部链接；引用的实体仍由 path 和 id 定位。"
+              }
+            },
+            "additionalProperties": false
+          },
+          "recordedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "实际记录时间，ISO 8601 且包含时区。"
+          },
+          "status": {
+            "enum": [
+              "pending",
+              "in_progress",
+              "blocked",
+              "completed"
+            ],
+            "description": "当前任务状态；完成必须有实现记录和通过的验证依据。"
+          },
+          "changes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+                },
+                "path": {
+                  "type": "string",
+                  "description": "相对当前 JSON 文件的路径；引用对象中的路径须指向本需求内文件。"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "path",
+                "description"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "evidenceRefs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "path",
+                "id"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "相对当前 JSON 文件的路径；引用对象中的路径须指向本需求内文件。"
+                },
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+                },
+                "locator": {
+                  "type": "string",
+                  "description": "材料中的章节、页码、时间记录或其他可定位位置。"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "材料原始外部链接；引用的实体仍由 path 和 id 定位。"
+                }
+              },
+              "additionalProperties": false
+            },
+            "description": "实际通过的验证项引用；计划验证方式不能替代实际结果。"
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "taskRef",
+          "recordedAt",
+          "status",
+          "changes"
+        ],
+        "additionalProperties": false
+      },
+      "description": "按实际时间追加任务执行事实；最新状态与任务清单一致。"
+    },
+    "verifications": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+          },
+          "taskRefs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "path",
+                "id"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "相对当前 JSON 文件的路径；引用对象中的路径须指向本需求内文件。"
+                },
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+                },
+                "locator": {
+                  "type": "string",
+                  "description": "材料中的章节、页码、时间记录或其他可定位位置。"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "材料原始外部链接；引用的实体仍由 path 和 id 定位。"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "scenarioRefs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "path",
+                "id"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "相对当前 JSON 文件的路径；引用对象中的路径须指向本需求内文件。"
+                },
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+                },
+                "locator": {
+                  "type": "string",
+                  "description": "材料中的章节、页码、时间记录或其他可定位位置。"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "材料原始外部链接；引用的实体仍由 path 和 id 定位。"
+                }
+              },
+              "additionalProperties": false
+            },
+            "description": "关联的需求场景引用，可一对多。"
+          },
+          "command": {
+            "type": "string"
+          },
+          "result": {
+            "enum": [
+              "passed",
+              "failed",
+              "not_run"
+            ],
+            "description": "passed、failed 或 not_run，不能用计划验证替代执行结果。"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "recordedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "实际记录时间，ISO 8601 且包含时区。"
+          }
+        },
+        "required": [
+          "id",
+          "command",
+          "result",
+          "recordedAt"
+        ],
+        "additionalProperties": false
+      },
+      "description": "按实际时间追加执行命令或方式、结果及说明，不编造通过。"
+    },
+    "remaining": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "未完成、受阻、未执行的必要检查和实际限制。"
+    }
+  },
+  "additionalProperties": false,
+  "title": "实现记录 1.0"
+}

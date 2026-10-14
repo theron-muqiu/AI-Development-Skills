@@ -1,0 +1,19 @@
+{
+  "$schema": "ai-devlop://schemas/raw/1.0",
+  "schemaVersion": "1.0",
+  "documentType": "raw",
+  "requirementId": "XQ20261013-001",
+  "title": "原始需求",
+  "timezone": "Asia/Shanghai",
+  "entries": [
+    {
+      "id": "I-001",
+      "timestamp": "2026-10-13T09:00:00.000+08:00",
+      "timeSource": "消息时间",
+      "skill": "spec",
+      "inputType": "用户需求",
+      "text": "用户可取消未发货订单。",
+      "attachments": []
+    }
+  ]
+}

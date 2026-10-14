@@ -1,0 +1,50 @@
+{
+  "$schema": "ai-devlop://schemas/api/1.0",
+  "schemaVersion": "1.0",
+  "documentType": "api",
+  "requirementId": "XQ20261013-001",
+  "title": "接口设计",
+  "interfaces": [
+    {
+      "id": "API-001",
+      "name": "取消订单",
+      "method": "POST",
+      "path": "/api/orders/{id}/cancel",
+      "purpose": "取消未发货订单",
+      "requestParams": [
+        {
+          "id": "PAR-001",
+          "name": "id",
+          "location": "Path",
+          "dataType": "Long",
+          "required": true
+        }
+      ],
+      "responseFields": [
+        {
+          "id": "RESP-001",
+          "name": "status",
+          "dataType": "String",
+          "description": "订单状态"
+        },
+        {
+          "id": "RESP-002",
+          "name": "orderId",
+          "dataType": "Long",
+          "description": "订单 ID"
+        }
+      ],
+      "requestExample": {},
+      "responseExample": {
+        "status": "CANCELLED",
+        "orderId": 9007199254740993
+      },
+      "scenarioRefs": [
+        {
+          "path": "../ai-devlop-spec/需求分析.json",
+          "id": "S-001"
+        }
+      ]
+    }
+  ]
+}

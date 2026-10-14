@@ -1,0 +1,226 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "$schema",
+    "schemaVersion",
+    "documentType",
+    "requirementId",
+    "title",
+    "objective",
+    "tasks"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "ai-devlop://schemas/task/1.0",
+      "description": "本地格式标识 ai-devlop://schemas/<documentType>/1.0，不联网读取。"
+    },
+    "schemaVersion": {
+      "const": "1.0",
+      "description": "文档格式版本，当前固定 1.0，与 CLI 版本独立。"
+    },
+    "documentType": {
+      "const": "task",
+      "description": "文档类别，由文件职责确定，不随标题改变。"
+    },
+    "requirementId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "同一需求的全部文档保持一致。"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "供阅读器显示的文档标题。"
+    },
+    "objective": {
+      "type": "string"
+    },
+    "included": {
+      "type": "string"
+    },
+    "excluded": {
+      "type": "string"
+    },
+    "constraints": {
+      "type": "string"
+    },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+          },
+          "name": {
+            "type": "string"
+          },
+          "goal": {
+            "type": "string"
+          },
+          "scenarioRefs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "path",
+                "id"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "相对当前 JSON 文件的路径；引用对象中的路径须指向本需求内文件。"
+                },
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+                },
+                "locator": {
+                  "type": "string",
+                  "description": "材料中的章节、页码、时间记录或其他可定位位置。"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "材料原始外部链接；引用的实体仍由 path 和 id 定位。"
+                }
+              },
+              "additionalProperties": false
+            },
+            "description": "关联的需求场景引用，可一对多。"
+          },
+          "dependsOn": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "同一任务清单内有效任务 ID，不得自依赖或形成环。"
+          },
+          "included": {
+            "type": "string"
+          },
+          "excluded": {
+            "type": "string"
+          },
+          "locations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "designRefs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "path",
+                "id"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "相对当前 JSON 文件的路径；引用对象中的路径须指向本需求内文件。"
+                },
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+                },
+                "locator": {
+                  "type": "string",
+                  "description": "材料中的章节、页码、时间记录或其他可定位位置。"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "材料原始外部链接；引用的实体仍由 path 和 id 定位。"
+                }
+              },
+              "additionalProperties": false
+            },
+            "description": "任务实施所依据的设计实体引用。"
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "按处理顺序表达业务步骤或实施步骤。"
+          },
+          "completionCriteria": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "同时包含业务结果和必要验证方式，生成任务时不写成已通过。"
+          },
+          "status": {
+            "enum": [
+              "pending",
+              "in_progress",
+              "blocked",
+              "completed"
+            ],
+            "description": "当前任务状态；完成必须有实现记录和通过的验证依据。"
+          },
+          "reopenReason": {
+            "type": "string",
+            "description": "规则变化或返工时写明重开原因，保留历史事实。"
+          },
+          "acceptanceRefs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "path",
+                "id"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "相对当前 JSON 文件的路径；引用对象中的路径须指向本需求内文件。"
+                },
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "稳定实体编号，在所属文档内唯一；修改顺序不重排，删除后不复用。"
+                },
+                "locator": {
+                  "type": "string",
+                  "description": "材料中的章节、页码、时间记录或其他可定位位置。"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "材料原始外部链接；引用的实体仍由 path 和 id 定位。"
+                }
+              },
+              "additionalProperties": false
+            },
+            "description": "关联的具体验收项引用。"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "goal",
+          "scenarioRefs",
+          "dependsOn",
+          "locations",
+          "steps",
+          "completionCriteria",
+          "status",
+          "acceptanceRefs"
+        ],
+        "additionalProperties": false
+      },
+      "description": "按业务交付结果拆分，保留 T001 等稳定编号。"
+    }
+  },
+  "additionalProperties": false,
+  "title": "任务清单 1.0"
+}
