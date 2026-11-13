@@ -99,6 +99,114 @@ class InstallerTests(unittest.TestCase):
                 self.assertEqual((self.target.skills / name / relative).read_bytes(), expected)
         self.assertEqual(set(cli.read_record(self.target)["skills"]), set(cli.SKILLS))
 
+    def test_six_skill_update_adds_review_skills(self):
+        """A registered six-skill bundle gains both complete review resources."""
+        old = {name: self.payload[name] for name in cli.PRE_REVIEW_SKILLS}
+        with patch.object(cli, "SKILLS", cli.PRE_REVIEW_SKILLS):
+            self.install(old)
+        self.install(update=True)
+        self.assertEqual(set(cli.read_record(self.target)["skills"]), set(cli.SKILLS))
+        for name, files in self.payload.items():
+            for relative, data in files.items():
+                self.assertEqual((self.target.skills / name / relative).read_bytes(), data)
+        self.assertFalse((self.root / "ai-dev-docs").exists())
+
+    def test_six_skill_upgrade_preserves_review_conflicts(self):
+        """A conflict in either new skill blocks all publication."""
+        old = {name: self.payload[name] for name in cli.PRE_REVIEW_SKILLS}
+        with patch.object(cli, "SKILLS", cli.PRE_REVIEW_SKILLS):
+            self.install(old)
+        before = self.target.record.read_bytes()
+        for name in cli.SKILLS[6:]:
+            with self.subTest(skill=name):
+                destination = self.target.skills / name
+                destination.mkdir()
+                (destination / "SKILL.md").write_bytes(b"custom review")
+                with self.assertRaises(cli.InstallError):
+                    self.install(update=True)
+                self.assertEqual(self.target.record.read_bytes(), before)
+                self.assertEqual((destination / "SKILL.md").read_bytes(), b"custom review")
+                (destination / "SKILL.md").unlink()
+                destination.rmdir()
+                self.assertTrue(all(not (self.target.skills / n).exists() for n in cli.SKILLS[6:]))
+
+    def test_six_skill_upgrade_preserves_local_edits(self):
+        """Adding reviews never overwrites local changes to existing skills."""
+        old = {name: self.payload[name] for name in cli.PRE_REVIEW_SKILLS}
+        with patch.object(cli, "SKILLS", cli.PRE_REVIEW_SKILLS):
+            self.install(old)
+        changed = self.target.skills / "ai-devlop-constitution" / "SKILL.md"
+        changed.write_bytes(b"local governance")
+        record = self.target.record.read_bytes()
+        with self.assertRaises(cli.InstallError):
+            self.install(update=True)
+        self.assertEqual(changed.read_bytes(), b"local governance")
+        self.assertEqual(self.target.record.read_bytes(), record)
+        self.assertTrue(all(not (self.target.skills / n).exists() for n in cli.SKILLS[6:]))
+
+    def test_six_skill_upgrade_rolls_back_last_review_failure(self):
+        """Failure publishing verify restores check and every old resource."""
+        old = {name: self.payload[name] for name in cli.PRE_REVIEW_SKILLS}
+        with patch.object(cli, "SKILLS", cli.PRE_REVIEW_SKILLS):
+            self.install(old)
+        before = {name: cli.snapshot(self.target.skills / name) for name in cli.SKILLS}
+        record = self.target.record.read_bytes()
+        rename = Path.rename
+
+        def fail_verify(source, destination):
+            if source.parent.name == "new" and source.name == "ai-devlop-verify":
+                raise OSError("simulated verify publish failure")
+            return rename(source, destination)
+
+        with patch.object(Path, "rename", fail_verify), self.assertRaises(OSError):
+            self.install(self.changed_payload(), update=True)
+        self.assertEqual(self.target.record.read_bytes(), record)
+        self.assertEqual({name: cli.snapshot(self.target.skills / name) for name in cli.SKILLS}, before)
+
+    def test_five_skill_update_adds_constitution_skill(self):
+        """A registered five-skill bundle gains all four constitution templates."""
+        old = {name: self.payload[name] for name in cli.PRE_CONSTITUTION_SKILLS}
+        with patch.object(cli, "SKILLS", cli.PRE_CONSTITUTION_SKILLS):
+            self.install(old)
+        self.install(update=True)
+        self.assertEqual(set(cli.read_record(self.target)["skills"]), set(cli.SKILLS))
+        for relative, data in self.payload[cli.SKILLS[5]].items():
+            self.assertEqual((self.target.skills / cli.SKILLS[5] / relative).read_bytes(), data)
+        self.assertFalse((self.root / ".ai-dev").exists())
+
+    def test_five_skill_upgrade_protects_constitution_conflict(self):
+        """An unregistered constitution skill is not silently overwritten."""
+        old = {name: self.payload[name] for name in cli.PRE_CONSTITUTION_SKILLS}
+        with patch.object(cli, "SKILLS", cli.PRE_CONSTITUTION_SKILLS):
+            self.install(old)
+        destination = self.target.skills / cli.SKILLS[5]
+        destination.mkdir()
+        (destination / "SKILL.md").write_bytes(b"custom constitution")
+        before = self.target.record.read_bytes()
+        with self.assertRaises(cli.InstallError):
+            self.install(update=True)
+        self.assertEqual((destination / "SKILL.md").read_bytes(), b"custom constitution")
+        self.assertEqual(self.target.record.read_bytes(), before)
+
+    def test_five_skill_upgrade_rolls_back_constitution_failure(self):
+        """Publishing the new skill must preserve the old bundle on failure."""
+        old = {name: self.payload[name] for name in cli.PRE_CONSTITUTION_SKILLS}
+        with patch.object(cli, "SKILLS", cli.PRE_CONSTITUTION_SKILLS):
+            self.install(old)
+        before = {name: cli.snapshot(self.target.skills / name) for name in cli.SKILLS}
+        record = self.target.record.read_bytes()
+        rename = Path.rename
+
+        def fail_new_skill(source, destination):
+            if source.parent.name == "new" and source.name == cli.SKILLS[5]:
+                raise OSError("simulated constitution publish failure")
+            return rename(source, destination)
+
+        with patch.object(Path, "rename", fail_new_skill), self.assertRaises(OSError):
+            self.install(self.changed_payload(), update=True)
+        self.assertEqual(self.target.record.read_bytes(), record)
+        self.assertEqual({name: cli.snapshot(self.target.skills / name) for name in cli.SKILLS}, before)
+
     def test_four_skill_update_adds_clarify_skill(self):
         """A registered v0.2.0 bundle upgrades with a complete clarify payload."""
         old = {name: self.payload[name] for name in cli.PRE_CLARIFY_SKILLS}

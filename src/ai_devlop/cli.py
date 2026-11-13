@@ -19,16 +19,21 @@ from datetime import datetime, timezone
 from . import __version__
 
 SKILLS = ("ai-devlop-spec", "ai-devlop-plan", "ai-devlop-task", "ai-devlop-implement",
-          "ai-devlop-clarify")
+          "ai-devlop-clarify", "ai-devlop-constitution", "ai-devlop-check", "ai-devlop-verify")
 LEGACY_SKILLS = SKILLS[:2]
 PRE_IMPLEMENT_SKILLS = SKILLS[:3]
 PRE_CLARIFY_SKILLS = SKILLS[:4]
+PRE_CONSTITUTION_SKILLS = SKILLS[:5]
+PRE_REVIEW_SKILLS = SKILLS[:6]
 REQUIRED_ASSETS = {
     SKILLS[0]: ("需求分析.md",),
     SKILLS[1]: ("详细设计.md", "接口设计.md", "数据结构设计.md"),
     SKILLS[2]: ("任务清单.md",),
     SKILLS[3]: ("实现记录.md",),
     SKILLS[4]: (),
+    SKILLS[5]: ("constitution.md", "engineering.md", "architecture.md", "security.md"),
+    SKILLS[6]: ("一致性检查.md",),
+    SKILLS[7]: ("实现验证.md",),
 }
 
 
@@ -170,7 +175,9 @@ def read_record(target: Target) -> dict | None:
                 or not isinstance(record["version"], str)
                 or set(record["skills"]) not in (set(SKILLS), set(LEGACY_SKILLS),
                                                   set(PRE_IMPLEMENT_SKILLS),
-                                                  set(PRE_CLARIFY_SKILLS))):
+                                                  set(PRE_CLARIFY_SKILLS),
+                                                  set(PRE_CONSTITUTION_SKILLS),
+                                                  set(PRE_REVIEW_SKILLS))):
             raise ValueError("manifest identity")
         for hashes in record["skills"].values():
             if not isinstance(hashes, dict) or "SKILL.md" not in hashes:
@@ -342,7 +349,7 @@ def show_status(target: Target, payload: dict[str, dict[str, bytes]]) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     """Expose only the two supported agents and whole-bundle operations."""
-    parser = argparse.ArgumentParser(prog="ai-devlop", description="为 Codex 或 Hermes 完整安装需求分析和设计技能。")
+    parser = argparse.ArgumentParser(prog="ai-devlop", description="为 Codex 或 Hermes 完整安装宪法、需求、澄清、设计、任务、检查、实现和验证技能。")
     parser.add_argument("--version", action="version", version=__version__)
     commands = parser.add_subparsers(dest="command")
     for command, help_text in (("install", "用户级安装全部技能"), ("init", "项目级安装全部技能"),
