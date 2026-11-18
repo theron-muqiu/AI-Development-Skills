@@ -45,15 +45,15 @@ AI 主导开发全流程，人工只在关键节点审核。
 
 ```bash
 # Codex
-uvx --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.4.0" ai-devlop install --agent codex
+uvx --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.4.1" ai-devlop install --agent codex
 ```
 
 ```bash
 # Hermes
-uvx --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.4.0" ai-devlop install --agent hermes
+uvx --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.4.1" ai-devlop install --agent hermes
 ```
 
-两种模式均安装上表中的完整八技能组合。`v0.4.0` 新增两级项目宪法、实施前一致性检查和实现后验证，默认需求文档目录统一为 `ai-dev-docs/requirements/`。原 `v0.3.2` 为五技能组合，`v0.2.0` 为四技能组合，`v0.1.0` 仅包含需求分析与技术设计。首次获取或构建工具可能需要联网；技能与模板从安装包读取，不另外下载。
+两种模式均安装上表中的完整八技能组合。`v0.4.1` 新增 UI UX Pro Max 自动可选联动：涉及页面时自动尝试调用，不可用或失败时跳过，无需主动启用，不增加外部依赖。`v0.4.0` 新增两级项目宪法、实施前一致性检查和实现后验证，默认需求文档目录统一为 `ai-dev-docs/requirements/`。原 `v0.3.2` 为五技能组合，`v0.2.0` 为四技能组合，`v0.1.0` 仅包含需求分析与技术设计。首次获取或构建工具可能需要联网；技能与模板从安装包读取，不另外下载。
 
 ### 3. 开始使用
 
@@ -134,6 +134,17 @@ $ai-devlop-verify 核对 XQ20261009-001 的代码是否完整实现需求，并�
 
 需求分析负责明确“做什么”，专项澄清用于检查已有需求、逐项确认关键缺口并立即同步已有需求、设计及任务的对应章节，不生成独立澄清文档；没有关键歧义时无需额外澄清。技术设计负责说明“如何做”。设计阶段沿用需求中的场景编号；任务拆分按业务交付结果划分，简单需求可只有一个任务，每个任务写清场景覆盖、实现位置、前置依赖和完成标准。需求仍有关键歧义时，应先澄清。任务清单生成后不会自动开始实施；调用实现技能后，默认按依赖顺序完成全部未完成任务，验证通过才勾选。遇到阻塞时保留真实未完成状态，继续不受影响的任务。
 
+### UI UX Pro Max：自动可选联动
+
+涉及页面、界面或 UI/UX 的工作，技能自动尝试调用外部 `ui-ux-pro-max`（UI UX Pro Max），无需用户主动启用或额外确认；不涉及界面的工作跳过，用户明确禁止时不调用。
+
+- **可用时按阶段使用**：需求与澄清辅助识别体验约束，设计形成页面与交互方案，任务拆分承接既有设计，实现沿用确定方案，check / verify 辅助只读核对。不会因联动自动推进下一阶段或扩大授权。
+- **不可用即跳过**：未安装、无法发现或加载、调用失败及能力不支持时，主动放弃本次调用，不反复重试、不追问、不阻塞、不自动安装或下载依赖；交付时简短说明一次即可。没有外部技能仍可独立完成原流程。
+- **项目规范优先**：沿用已有技术栈、组件库和设计系统；外部建议不自动成为业务规则或项目强制要求，不擅自更换全站风格。采用的设计写进现有详细设计，后续不依赖再次调用才能理解。
+- **验证依据真实证据**：调用成功不等于 UI 验收通过，构建成功也不等于视觉、响应式或交互验证通过。缺少实际页面证据时如实标明未验证。
+
+本项目仍只安装和管理八个技能，不捆绑、安装或更新 UI UX Pro Max，不增加 CLI 开关或运行时依赖。外部技能可由用户按 [UI UX Pro Max 上游说明](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) 单独安装；以当前 Agent 实际可发现和可调用的能力为准，不保证不同 Agent 的调用方式一致。
+
 ### check 与 verify：两个独立质量检查节点
 
 推荐顺序：`spec → clarify（按需）→ plan → task → check → implement → verify`。所有技能均由用户明确调用，不自动触发下一步；未生成 check 报告不阻止 verify 独立核对。
@@ -180,7 +191,7 @@ ai-dev-docs/requirements/XQ20261009-001/
 经常给不同项目安装技能时，可以长期安装 CLI：
 
 ```bash
-uv tool install ai-devlop-cli --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.4.0"
+uv tool install ai-devlop-cli --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.4.1"
 ```
 
 之后可以在任意目录使用 `ai-devlop`。以下示例使用已安装的 CLI；不长期安装时，继续用上面的 `uvx --from ... ai-devlop ...` 形式执行。在本地源码目录开发时，也可以使用 `uvx --from . ai-devlop ...`。
@@ -285,7 +296,7 @@ uv run --no-project --with . python -m unittest discover -s tests -v
 3. 审核通过后合并；合并后删除短期分支，不直接向 `main` 推送日常改动。
 4. 准备发布时，先更新 CLI 版本并验证安装包；合并到 `main` 后创建对应的 `vX.Y.Z` 标签。标签指向固定提交，不移动已发布标签。
 
-当前稳定版本为 [`v0.4.0`](https://github.com/theron-muqiu/AI-Development-Skills/tree/v0.4.0)。安装示例固定此标签，避免 `main` 后续更新改变已安装版本。
+当前稳定版本为 [`v0.4.1`](https://github.com/theron-muqiu/AI-Development-Skills/tree/v0.4.1)。安装示例固定此标签，避免 `main` 后续更新改变已安装版本。
 
 ## 常见问题
 
