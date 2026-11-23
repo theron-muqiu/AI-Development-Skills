@@ -51,20 +51,20 @@ description: 通过 constitution 对话命令创建或修订项目宪法：在 .
 
 | 字段 | 填写要求 |
 | --- | --- |
-| Rule ID | 唯一且稳定的编号（如 `ENG-001`、`ARC-001`、`SEC-001`），三份 L2 间不重复，正式使用后不随意重编号 |
-| Strength | `MUST` / `MUST NOT` / `SHOULD` / `MAY`（`SHOULD` 写明偏离条件） |
-| Scope | 适用范围 |
-| Requirement | 明确、可执行的具体限制与指导，不写空泛口号或跨文件引用 |
-| Verification | 如何验证遵守该规则 |
+| 规则编号 | 唯一且稳定的编号（如 `ENG-001`、`ARC-001`、`SEC-001`），三份 L2 间不重复，正式使用后不随意重编号 |
+| 约束强度 | `MUST` / `MUST NOT` / `SHOULD` / `MAY`（`SHOULD` 写明偏离条件） |
+| 适用范围 | 适用范围 |
+| 具体要求 | 明确、可执行的具体限制与指导，不写空泛口号或跨文件引用 |
+| 验证方式 | 如何验证遵守该规则 |
 
-- **Engineering**：`Coding Standards` / `Code Quality` / `Testing` / `Dependency Management` / `Error Handling` / `Logging` / `Build` / `CI/CD` / `Documentation`。
-- **Architecture**：`Architecture Style` / `Layer Boundary` / `Module Boundary` / `Dependency Rules` / `Data Ownership` / `API Contract` / `Transaction Boundary` / `Integration` / `Extensibility` / `Architecture Testing`。必须基于真实模块、依赖与边界，不套用通用模式清单。
-- **Security**：`Authentication` / `Authorization` / `Data Isolation` / `Sensitive Data` / `Input Validation` / `Secure Communication` / `Audit Logging` / `Dependency Security` / `Error Handling` / `Security Testing`。直接针对真实信任边界与敏感数据类型制定限制。
+- **工程规范**：`编码规范` / `代码质量` / `测试规范` / `依赖管理` / `错误处理` / `日志规范` / `构建规范` / `持续集成与交付` / `文档规范`。
+- **架构规范**：`架构风格` / `分层边界` / `模块边界` / `依赖规则` / `数据归属` / `接口契约` / `事务边界` / `外部集成` / `扩展性约束` / `架构测试`。必须基于真实模块、依赖与边界，不套用通用模式清单。
+- **安全规范**：`身份认证` / `权限控制` / `数据隔离` / `敏感数据` / `输入校验` / `安全通信` / `审计日志` / `依赖安全` / `安全错误处理` / `安全测试`。直接针对真实信任边界与敏感数据类型制定限制。
 
 ### 4. 保存与一致性核对
 
 - 确认只写入授权文件，模板占位符已替换为真实约束或标明待确认。
-- 检查 Rule ID 是否唯一、L2 是否违反 L1、L2 之间是否存在冲突，以及各文件是否保持独立无跨文件引用。
+- 检查规则编号是否唯一、L2 是否违反 L1、L2 之间是否存在冲突，以及各文件是否保持独立无跨文件引用。
 - 保存前后核对原文件，确保未误删其他有效规则。
 
 ## 交付
