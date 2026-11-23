@@ -45,12 +45,12 @@ AI 主导开发全流程，人工只在关键节点审核。
 
 ```bash
 # Codex
-uvx --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.4.3" ai-devlop install --agent codex
+uvx --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.4.4" ai-devlop install --agent codex
 ```
 
 ```bash
 # Hermes
-uvx --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.4.3" ai-devlop install --agent hermes
+uvx --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.4.4" ai-devlop install --agent hermes
 ```
 
 两种模式均安装上表中的完整八技能组合。`v0.4.1` 新增 UI UX Pro Max 自动可选联动：涉及页面时自动尝试调用，不可用或失败时跳过，无需主动启用，不增加外部依赖。`v0.4.0` 新增两级项目宪法、实施前一致性检查和实现后验证，默认需求文档目录统一为 `ai-dev-docs/requirements/`。原 `v0.3.2` 为五技能组合，`v0.2.0` 为四技能组合，`v0.1.0` 仅包含需求分析与技术设计。首次获取或构建工具可能需要联网；技能与模板从安装包读取，不另外下载。
@@ -86,9 +86,9 @@ $ai-devlop-constitution 结合当前项目编写项目宪法，L1 控制在 5～
 
 L1 文件名为 `constitution.md`。L1 建议 5～8 条原则，不承载完整工程规范或详细技术实现；L2 细化但不得覆盖 L1。架构规范必须结合真实项目制定，不直接套用通用架构模式。
 
-- **工程规范**：Coding Standards、Code Quality、Testing、Dependency Management、Error Handling、Logging、Build、CI/CD、Documentation。
-- **架构规范**：Architecture Style、Layer Boundary、Module Boundary、Dependency Rules、Data Ownership、API Contract、Transaction Boundary、Integration、Extensibility、Architecture Testing。
-- **安全规范**：Authentication、Authorization、Data Isolation、Sensitive Data、Input Validation、Secure Communication、Audit Logging、Dependency Security、Error Handling、Security Testing。
+- **工程规范**：编码规范、代码质量、测试规范、依赖管理、错误处理、日志规范、构建规范、持续集成与交付、文档规范。
+- **架构规范**：架构风格、分层边界、模块边界、依赖规则、数据归属、接口契约、事务边界、外部集成、扩展性约束、架构测试。
+- **安全规范**：身份认证、权限控制、数据隔离、敏感数据、输入校验、安全通信、审计日志、依赖安全、安全错误处理、安全测试。
 
 技能先读取已有规范和项目证据，再编写或定向修订，直接给出明确、可执行的约束与限制；未知项明确标待确认，不把模板当作项目事实，不记录版本历史、审核流程或跨文件引用。对于匹配内置初始化预设的项目（`assets/presets/security-baseline.md` 提供通用代码级安全基线，`assets/presets/java-spring-boot.md` 覆盖 JDK 17+ / Spring Boot 3.x / MyBatis-Plus / Redis 单体与分布式双模，`assets/presets/vue-ts-vite.md` 覆盖 Vue 3 + TypeScript + Vite + Pinia + Vue Router 前端工程），可按实际模式作为初始化基线落地。只修改本次范围内的规范，不自动修改业务代码或下游文档，不自动提交。
 
@@ -191,7 +191,7 @@ ai-dev-docs/requirements/XQ20261009-001/
 经常给不同项目安装技能时，可以长期安装 CLI：
 
 ```bash
-uv tool install ai-devlop-cli --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.4.3"
+uv tool install ai-devlop-cli --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.4.4"
 ```
 
 之后可以在任意目录使用 `ai-devlop`。以下示例使用已安装的 CLI；不长期安装时，继续用上面的 `uvx --from ... ai-devlop ...` 形式执行。在本地源码目录开发时，也可以使用 `uvx --from . ai-devlop ...`。
@@ -296,7 +296,7 @@ uv run --no-project --with . python -m unittest discover -s tests -v
 3. 审核通过后合并；合并后删除短期分支，不直接向 `main` 推送日常改动。
 4. 准备发布时，先更新 CLI 版本并验证安装包；合并到 `main` 后创建对应的 `vX.Y.Z` 标签。标签指向固定提交，不移动已发布标签。
 
-当前稳定版本为 [`v0.4.3`](https://github.com/theron-muqiu/AI-Development-Skills/tree/v0.4.3)。安装示例固定此标签，避免 `main` 后续更新改变已安装版本。
+当前稳定版本为 [`v0.4.4`](https://github.com/theron-muqiu/AI-Development-Skills/tree/v0.4.4)。安装示例固定此标签，避免 `main` 后续更新改变已安装版本。
 
 ## 常见问题
 

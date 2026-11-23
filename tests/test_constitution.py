@@ -9,14 +9,14 @@ class ConstitutionTests(unittest.TestCase):
     def test_templates_cover_required_domains(self):
         payload = load_payload()["ai-devlop-constitution"]
         domains = {
-            "engineering.md": ("Coding Standards", "Code Quality", "Testing", "Dependency Management",
-                               "Error Handling", "Logging", "Build", "CI/CD", "Documentation"),
-            "architecture.md": ("Architecture Style", "Layer Boundary", "Module Boundary", "Dependency Rules",
-                                "Data Ownership", "API Contract", "Transaction Boundary", "Integration",
-                                "Extensibility", "Architecture Testing"),
-            "security.md": ("Authentication", "Authorization", "Data Isolation", "Sensitive Data",
-                            "Input Validation", "Secure Communication", "Audit Logging",
-                            "Dependency Security", "Error Handling", "Security Testing"),
+            "engineering.md": ("编码规范", "代码质量", "测试规范", "依赖管理",
+                               "错误处理", "日志规范", "构建规范", "持续集成与交付", "文档规范"),
+            "architecture.md": ("架构风格", "分层边界", "模块边界", "依赖规则",
+                                "数据归属", "接口契约", "事务边界", "外部集成",
+                                "扩展性约束", "架构测试"),
+            "security.md": ("身份认证", "权限控制", "数据隔离", "敏感数据",
+                            "输入校验", "安全通信", "审计日志",
+                            "依赖安全", "安全错误处理", "安全测试"),
         }
         for filename, headings in domains.items():
             text = payload["assets/" + filename].decode("utf-8")
