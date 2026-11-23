@@ -35,6 +35,46 @@ class ConstitutionTests(unittest.TestCase):
                 with self.subTest(skill=name, filename=filename):
                     self.assertIn(filename, text)
 
+    def test_constitution_templates_are_pure_and_independent(self):
+        payload = load_payload()["ai-devlop-constitution"]
+        forbidden_terms = ("变更与审批记录", "待批准修订", "审批主体", "首次批准日期", "L1 Reference",
+                           "依据 L1", "草案未生效")
+        cross_file_refs = ("constitution.md", "engineering.md", "architecture.md", "security.md")
+        for asset in ("assets/constitution.md", "assets/engineering.md",
+                      "assets/architecture.md", "assets/security.md"):
+            text = payload[asset].decode("utf-8")
+            with self.subTest(asset=asset):
+                for term in forbidden_terms:
+                    self.assertNotIn(term, text)
+                for ref in cross_file_refs:
+                    self.assertNotIn(ref, text)
+
+    def test_java_spring_boot_preset_is_packaged_and_complete(self):
+        payload = load_payload()["ai-devlop-constitution"]
+        preset_key = "assets/presets/java-spring-boot.md"
+        self.assertIn(preset_key, payload)
+        text = payload[preset_key].decode("utf-8")
+        for marker in ("通用底座规范", "单体应用专属规范", "分布式 / 微服务专属规范",
+                       "Spring Boot 3", "MyBatis-Plus", "Redis"):
+            self.assertIn(marker, text)
+
+    def test_vue_ts_vite_preset_is_packaged_and_complete(self):
+        payload = load_payload()["ai-devlop-constitution"]
+        preset_key = "assets/presets/vue-ts-vite.md"
+        self.assertIn(preset_key, payload)
+        text = payload[preset_key].decode("utf-8")
+        for marker in ("标准目录结构", "命名规范", "Pinia", "Vue 3", "TypeScript", "Vite"):
+            self.assertIn(marker, text)
+
+    def test_security_baseline_preset_is_packaged_and_complete(self):
+        payload = load_payload()["ai-devlop-constitution"]
+        preset_key = "assets/presets/security-baseline.md"
+        self.assertIn(preset_key, payload)
+        text = payload[preset_key].decode("utf-8")
+        for marker in ("输入校验与防注入", "权限控制与防越权", "敏感数据与密码学安全",
+                       "文件与网络请求安全", "业务逻辑与并发安全", "客户端代码安全"):
+            self.assertIn(marker, text)
+
 
 if __name__ == "__main__":
     unittest.main()
