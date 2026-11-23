@@ -45,12 +45,12 @@ AI 主导开发全流程，人工只在关键节点审核。
 
 ```bash
 # Codex
-uvx --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.4.1" ai-devlop install --agent codex
+uvx --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.4.3" ai-devlop install --agent codex
 ```
 
 ```bash
 # Hermes
-uvx --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.4.1" ai-devlop install --agent hermes
+uvx --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.4.3" ai-devlop install --agent hermes
 ```
 
 两种模式均安装上表中的完整八技能组合。`v0.4.1` 新增 UI UX Pro Max 自动可选联动：涉及页面时自动尝试调用，不可用或失败时跳过，无需主动启用，不增加外部依赖。`v0.4.0` 新增两级项目宪法、实施前一致性检查和实现后验证，默认需求文档目录统一为 `ai-dev-docs/requirements/`。原 `v0.3.2` 为五技能组合，`v0.2.0` 为四技能组合，`v0.1.0` 仅包含需求分析与技术设计。首次获取或构建工具可能需要联网；技能与模板从安装包读取，不另外下载。
@@ -90,7 +90,7 @@ L1 文件名为 `constitution.md`。L1 建议 5～8 条原则，不承载完整�
 - **架构规范**：Architecture Style、Layer Boundary、Module Boundary、Dependency Rules、Data Ownership、API Contract、Transaction Boundary、Integration、Extensibility、Architecture Testing。
 - **安全规范**：Authentication、Authorization、Data Isolation、Sensitive Data、Input Validation、Secure Communication、Audit Logging、Dependency Security、Error Handling、Security Testing。
 
-技能先读取已有规范和项目证据，再编写或定向修订；支持草案、批准状态、语义版本、批准与修订日期、宪法内部一致性检查。未知项明确待确认，不把模板当作已批准事实。只修改本次治理范围内的规范，不自动修改业务代码或下游文档，不自动提交。
+技能先读取已有规范和项目证据，再编写或定向修订，直接给出明确、可执行的约束与限制；未知项明确标待确认，不把模板当作项目事实，不记录版本历史、审核流程或跨文件引用。对于匹配内置初始化预设的项目（`assets/presets/security-baseline.md` 提供通用代码级安全基线，`assets/presets/java-spring-boot.md` 覆盖 JDK 17+ / Spring Boot 3.x / MyBatis-Plus / Redis 单体与分布式双模，`assets/presets/vue-ts-vite.md` 覆盖 Vue 3 + TypeScript + Vite + Pinia + Vue Router 前端工程），可按实际模式作为初始化基线落地。只修改本次范围内的规范，不自动修改业务代码或下游文档，不自动提交。
 
 后续七个技能在运行时读取这些规范并检查一致性。规范缺失不会自动创建文件，也不会无条件阻断旧项目；只有影响当前任务的关键缺口才需要澄清。安装和更新技能仅安装模板，不会在项目中生成或覆盖 `.ai-dev/`，实际规范由调用宪法技能时编写。需求文档继续保留在 `ai-dev-docs/requirements/`，不迁移到 `.ai-dev/`。
 
@@ -149,7 +149,7 @@ $ai-devlop-verify 核对 XQ20261009-001 的代码是否完整实现需求，并�
 
 推荐顺序：`spec → clarify（按需）→ plan → task → check → implement → verify`。所有技能均由用户明确调用，不自动触发下一步；未生成 check 报告不阻止 verify 独立核对。
 
-- **check**：只读核对本需求的原始输入、需求、已有设计与任务，检查场景覆盖、术语与契约一致性、依赖、完成标准和已批准宪法规则。不会检查实现是否完成，也不运行构建或测试。
+- **check**：只读核对本需求的原始输入、需求、已有设计与任务，检查场景覆盖、术语与契约一致性、依赖、完成标准和适用宪法规则。不会检查实现是否完成，也不运行构建或测试。
 - **verify**：对照需求及验收标准检查真实代码、入口调用链、异常边界、数据和权限、测试与任务状态证据。可执行授权范围内已有的安全本地构建与测试，不把任务勾选、实现记录、静态阅读或测试通过单独当作完整实现的证明。
 - 两个技能只写各自报告，不修改源文档、代码、宪法或任务勾选；仅咨询或明确禁止写入时在会话交付。重复执行更新原报告，不为每次运行新增副本。问题严重程度与宪法规则强度分开记录。
 - 报告区分通过、发现问题、未验证与不适用；缺少材料、宪法或执行环境时明确限制，不伪称通过。无法协调的规范冲突交由用户决策，不自动修宪或认定例外成立。
@@ -191,7 +191,7 @@ ai-dev-docs/requirements/XQ20261009-001/
 经常给不同项目安装技能时，可以长期安装 CLI：
 
 ```bash
-uv tool install ai-devlop-cli --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.4.1"
+uv tool install ai-devlop-cli --from "git+https://github.com/theron-muqiu/AI-Development-Skills.git@v0.4.3"
 ```
 
 之后可以在任意目录使用 `ai-devlop`。以下示例使用已安装的 CLI；不长期安装时，继续用上面的 `uvx --from ... ai-devlop ...` 形式执行。在本地源码目录开发时，也可以使用 `uvx --from . ai-devlop ...`。
@@ -296,7 +296,7 @@ uv run --no-project --with . python -m unittest discover -s tests -v
 3. 审核通过后合并；合并后删除短期分支，不直接向 `main` 推送日常改动。
 4. 准备发布时，先更新 CLI 版本并验证安装包；合并到 `main` 后创建对应的 `vX.Y.Z` 标签。标签指向固定提交，不移动已发布标签。
 
-当前稳定版本为 [`v0.4.1`](https://github.com/theron-muqiu/AI-Development-Skills/tree/v0.4.1)。安装示例固定此标签，避免 `main` 后续更新改变已安装版本。
+当前稳定版本为 [`v0.4.3`](https://github.com/theron-muqiu/AI-Development-Skills/tree/v0.4.3)。安装示例固定此标签，避免 `main` 后续更新改变已安装版本。
 
 ## 常见问题
 
